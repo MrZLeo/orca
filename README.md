@@ -2,7 +2,9 @@
 A RISC-V and unix-like operating system developed just for fun.
 
 ## Schedule
-[ ] bootloader
+[*] bootloader (use RustSBI-qemu)
+
+[ ] linker & stack
 
 [ ] memory allocation (malloc)
 
