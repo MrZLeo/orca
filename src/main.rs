@@ -1,12 +1,15 @@
 #![no_std]
 #![no_main]
+#![feature(panic_info_message)]
 
 #[macro_use]
 mod console;
 mod lang_item;
+mod orca_logo;
 mod sbi;
 
 use core::arch::global_asm;
+use lang_item::panic;
 use sbi::shutdown;
 
 global_asm!(include_str!("entry.S"));
@@ -15,7 +18,7 @@ global_asm!(include_str!("entry.S"));
 pub fn __main() {
     clear_bss();
     sys_info();
-    shutdown();
+    panic!("test panic!");
     // loop {}
 }
 
@@ -28,12 +31,7 @@ fn clear_bss() {
 }
 
 fn sys_info() {
-    println!(r"   ___   ____    ____     _    ");
-    println!(r"  / _ \ |  _ \  / ___|   / \   ");
-    println!(r" | | | || |_) || |      / _ \  ");
-    println!(r" | |_| ||  _ < | |___  / ___ \ ");
-    println!(r"  \___/ |_| \_\ \____|/_/   \_\");
-    println!(r"                               ");
+    print!("{}", orca_logo::ORCA_LOGO);
 }
 
 #[cfg(test)]
