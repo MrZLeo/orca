@@ -24,8 +24,10 @@ build:
 	@rust-objcopy --strip-all target/riscv64gc-unknown-none-elf/release/orca -O binary target/riscv64gc-unknown-none-elf/release/orca.bin
 
 qemu:
-	@echo "Booting system..."
-	$(QEMU) $(QEMUOPTS)
+	@echo "[1/1] Booting system..."
+	@$(QEMU) $(QEMUOPTS)
+
+run: build qemu
 
 gdb:
 	$(GDB) $(GDBOPTS)
