@@ -4,7 +4,7 @@ use core::panic::PanicInfo;
 #[panic_handler]
 pub fn panic(info: &PanicInfo) -> ! {
     if let Some(location) = info.location() {
-        println!(
+        error!(
             "!!> Panic at {}:{} {}",
             location.file(),
             location.line(),
