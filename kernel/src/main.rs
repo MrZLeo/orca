@@ -5,9 +5,13 @@
 
 #[macro_use]
 mod console;
+mod batch;
 mod lang_item;
 mod orca_logo;
 mod sbi;
+mod sync;
+mod syscall;
+mod trap;
 
 use console::{println_with_color, GREEN};
 use core::arch::global_asm;
@@ -54,6 +58,3 @@ fn sys_info() {
     info!(".data [{:#x}, {:#x}]", sdata as usize, edata as usize);
     info!(".bss [{:#x}, {:#x}]", sbss as usize, ebss as usize);
 }
-
-#[cfg(test)]
-mod test {}

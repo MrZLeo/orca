@@ -53,6 +53,12 @@ pub fn println_with_color(s: &str, color: Color) {
     println!("\x1b[{}m{}\x1b[0m", color.0, s);
 }
 
+/// color for logo
+/// - error: red
+/// - info: blue
+/// - warn: yellow
+/// - debug: green
+/// - trace: white
 #[macro_export]
 macro_rules! error {
     ($fmt: literal $(, $($arg: tt)+)?) => {
