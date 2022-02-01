@@ -2,14 +2,16 @@
 # 	- make build: compile os
 # 	- make qemu: run os and stop when qemu start
 # 	- make gdb: open gdb and connect to os which is started
-#
+#   - make eun: build and qemu
+#   - env: build the basic environment for rust compiler
 
+TARGET := riscv64gc-unknown-none-elf
 
 QEMU = qemu-system-riscv64
 QEMUOPTS = -machine virt \
 		   -nographic \
 		   -bios bootloader/rustsbi-qemu.bin \
-		   -device loader,file=target/riscv64gc-unknown-none-elf/release/orca.bin,addr=0x80200000
+		   -device loader,file=target/$(TARGET)/release/orca.bin,addr=0x80200000
 # QEMUOPTS += -s -S
 
 GDB = riscv64-unknown-elf-gdb
@@ -21,7 +23,7 @@ build:
 	@echo "[1/2] Building orca..."
 	@cargo build --release
 	@echo "[2/2] Modifying os image..."
-	@rust-objcopy --strip-all target/riscv64gc-unknown-none-elf/release/orca -O binary target/riscv64gc-unknown-none-elf/release/orca.bin
+	@rust-objcopy --strip-all target/$(TARGET)/release/orca -O binary target/riscv64gc-unknown-none-elf/release/orca.bin
 
 qemu:
 	@echo "[1/1] Booting system..."
@@ -31,6 +33,16 @@ run: build qemu
 
 gdb:
 	$(GDB) $(GDBOPTS)
+
+env:
+	@echo "\x1b[1m[1/4] Check target\x1b[0m"
+	@(rustup target list | grep "$(TARGET) (installed)") || @rustup target add $(TARGET)
+	@echo "\x1b[1m[2/4] Check cargo-binutils\x1b[0m"
+	@cargo install cargo-binutils
+	@echo "\x1b[1m[3/4] Check rust-src\x1b[0m"
+	@rustup component add rust-src
+	@echo "\x1b[1m[4/4] Check llvm-tools-preview\x1b[0m"
+	@rustup component add llvm-tools-preview
 
 
 all: build
