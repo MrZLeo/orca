@@ -10,7 +10,7 @@ TARGET := riscv64gc-unknown-none-elf
 QEMU = qemu-system-riscv64
 QEMUOPTS = -machine virt \
 		   -nographic \
-		   -bios bootloader/rustsbi-qemu.bin \
+		   -bios ../bootloader/rustsbi-qemu.bin \
 		   -device loader,file=target/$(TARGET)/release/orca.bin,addr=0x80200000
 # QEMUOPTS += -s -S
 

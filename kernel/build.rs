@@ -5,7 +5,7 @@ static TARGET_DIR: &str = "../user/target/riscv64gc-unknown-none-elf/release/";
 
 /// crate `link_app.S` automatically
 fn init_app_data() -> Result<()> {
-    let mut file = File::create("link_app.S").unwrap();
+    let mut file = File::create("src/link_app.S").unwrap();
 
     // get file name `xxx.bin`, and reduce `.bin`
     // all name store in `apps`

@@ -19,12 +19,16 @@ use lang_item::panic;
 use sbi::shutdown;
 
 global_asm!(include_str!("entry.S"));
+global_asm!(include_str!("link_app.S"));
 
 #[no_mangle]
 pub fn __main() {
     clear_bss();
     sys_info();
-    shutdown();
+    debug!("[kernel] Hello World!");
+    trap::trap_init();
+    batch::batch_init();
+    batch::batch_schedule();
 }
 
 fn clear_bss() {

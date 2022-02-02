@@ -1,7 +1,8 @@
 mod context;
 
 use crate::batch::batch_schedule;
-use context::Context;
+use crate::syscall::syscall;
+pub use context::Context;
 use core::arch::global_asm;
 use riscv::register::{
     scause::{self, Exception, Trap},
@@ -27,7 +28,7 @@ pub fn trap_handler(ctx: &mut Context) -> &mut Context {
     match scause.cause() {
         Trap::Exception(Exception::UserEnvCall) => {
             ctx.sepc += 4;
-            ctx.x[10] = syscall(cx.x[17], [cx.x[10], cx.x[11], cx.x[12]]);
+            ctx.x[10] = syscall(ctx.x[17], [ctx.x[10], ctx.x[11], ctx.x[12]]) as usize;
         }
         Trap::Exception(Exception::StoreFault) | Trap::Exception(Exception::StorePageFault) => {
             error!("[kernel] Fage fault in application, kernel will kill it");

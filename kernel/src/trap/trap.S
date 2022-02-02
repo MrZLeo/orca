@@ -1,8 +1,15 @@
-.marco SAVE_GP n
+.altmacro
+.macro SAVE_GP n
     sd x\n, \n*8(sp)
 .endm
+.macro LOAD_GP n
+    ld x\n, \n*8(sp)
+.endm
 
-.align 2
+    .section .text
+    .globl __alltraps
+    .globl __restore
+    .align 2
 __alltraps:
     csrrw sp, sscratch, sp
     addi sp, sp, -34*8
@@ -15,7 +22,7 @@ __alltraps:
     .set n, 5
     .rept 27
         SAVE_GP %n
-        .set n n+1
+        .set n, n+1
     .endr
 
     csrr t0, sstatus
@@ -28,10 +35,6 @@ __alltraps:
 
     mv a0, sp
     call trap_handler # trap_handler(ctx: &context)
-
-.macro LOAD_GP
-    ld x\n, \n*8(sp)
-.endm
 
 __restore:
     mv sp, a0 # load &context from arg0, change stack to user
@@ -47,10 +50,10 @@ __restore:
     # restore greneral purpose registers except sp/tp
     ld x1, 1*8(sp)
     ld x3, 3*8(sp)
-    .set n 5
-    .rept
+    .set n, 5
+    .rept 27
         LOAD_GP %n
-        .set n n+1
+        .set n, n+1
     .endr
 
     addi sp, sp, 34*8

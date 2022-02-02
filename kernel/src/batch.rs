@@ -7,9 +7,10 @@ struct AppManager {
     len: usize,
 }
 
-use core::arch::asm;
-
+use crate::lang_item::panic;
 use crate::sync::UniProcSafeCell;
+use crate::trap::Context;
+use core::arch::asm;
 use lazy_static::lazy_static;
 
 /// const about AppManager
@@ -112,8 +113,37 @@ impl Stack {
     pub fn sp(&self) -> usize {
         self.data.as_ptr() as usize + self.data.len()
     }
+
+    pub fn push_ctx(&self, ctx: Context) -> &'static mut Context {
+        let ctx_ptr = (self.sp() - core::mem::size_of::<Context>()) as *mut Context;
+        unsafe {
+            *ctx_ptr = ctx;
+            ctx_ptr.as_mut().unwrap()
+        }
+    }
 }
 
 pub fn batch_schedule() -> ! {
-    loop {}
+    let mut app_manager = APP_MANAGER.borrow_mut();
+    let cur_app = app_manager.cur_app();
+
+    unsafe {
+        app_manager.load_app(cur_app);
+    }
+
+    app_manager.next_app();
+    drop(app_manager);
+
+    extern "C" {
+        fn __restore(ctx: usize);
+    }
+
+    unsafe {
+        __restore(
+            KERNEL_STACK.push_ctx(Context::app_init_cxt(APP_BASE_ADDR, USER_STACK.sp())) as *const _
+                as usize,
+        );
+    }
+
+    panic!("Unreachable: batch schedule");
 }
