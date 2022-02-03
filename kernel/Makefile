@@ -33,15 +33,15 @@ GDBOPTS += -ex 'target remote localhost:1234'
 
 
 build:
-	@echo "[1/3] building user apps..."
+	@echo "### building user apps..."
 	@cd ../user && make build
-	@echo "[2/3] Building orca..."
+	@echo "### Building orca..."
 	@cargo build --release
-	@echo "[3/3] Modifying os image..."
+	@echo "### Modifying os image..."
 	@rust-objcopy --strip-all $(RELEASE_DIR)/$(OS_NAME) -O binary $(RELEASE_DIR)/$(OS_BIN)
 
 qemu:
-	@echo "[1/1] Booting system..."
+	@echo "### Booting system..."
 	@$(QEMU) $(QEMUOPTS)
 
 run: build qemu
@@ -56,13 +56,13 @@ gdb:
 	$(GDB) $(GDBOPTS)
 
 env:
-	@echo "\x1b[1m[1/4] Check target\x1b[0m"
+	@echo "\x1b[1m### Check target\x1b[0m"
 	@(rustup target list | grep "$(TARGET) (installed)") || @rustup target add $(TARGET)
-	@echo "\x1b[1m[2/4] Check cargo-binutils\x1b[0m"
+	@echo "\x1b[1m### Check cargo-binutils\x1b[0m"
 	@cargo install cargo-binutils
-	@echo "\x1b[1m[3/4] Check rust-src\x1b[0m"
+	@echo "\x1b[1m### Check rust-src\x1b[0m"
 	@rustup component add rust-src
-	@echo "\x1b[1m[4/4] Check llvm-tools-preview\x1b[0m"
+	@echo "\x1b[1m### Check llvm-tools-preview\x1b[0m"
 	@rustup component add llvm-tools-preview
 
 
