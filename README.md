@@ -27,3 +27,4 @@ A RISC-V and unix-like operating system developed just for fun.
 ## References
 1. xv6-riscv: an elegant educational os https://github.com/mit-pdos/xv6-riscv
 2. rcore: an educational os developed by rust https://github.com/rcore-os/rCore
+3. rcore-tutorial-v3: https://github.com/rcore-os/rCore-Tutorial-v3/tree/ch2-dev/os/src
