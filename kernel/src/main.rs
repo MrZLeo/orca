@@ -52,7 +52,7 @@ fn sys_info() {
         fn sbss();
         fn ebss();
     }
-    print!("{}", orca_logo::ORCA_LOGO);
+    print!("\x1b[1m{}\x1b[0m", orca_logo::ORCA_LOGO);
     info!(
         "kernel range [{:#x}, {:#x}]",
         skernel as usize, ekernel as usize

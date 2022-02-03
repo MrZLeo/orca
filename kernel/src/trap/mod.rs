@@ -25,7 +25,10 @@ pub fn trap_init() {
 pub fn trap_handler(ctx: &mut Context) -> &mut Context {
     let scause = scause::read();
     let stval = stval::read();
+
+    // handler exception by scause
     match scause.cause() {
+        // syscall interface
         Trap::Exception(Exception::UserEnvCall) => {
             ctx.sepc += 4;
             ctx.x[10] = syscall(ctx.x[17], [ctx.x[10], ctx.x[11], ctx.x[12]]) as usize;
