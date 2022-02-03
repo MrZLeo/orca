@@ -1,9 +1,10 @@
 # Make Commands
 # 	- make build: compile os
 # 	- make qemu: run os and stop when qemu start
-# 	- make gdb: open gdb and connect to os which is started
-#   - make eun: build and qemu
-#   - env: build the basic environment for rust compiler
+# 	- make debug: build in debug mode
+# 	- make gdb: open gdb and connect to os which is started, **os must be build in debug mode**
+# 	- make qeun: build and qemu
+# 	- make env: build the basic environment for rust compiler
 
 TARGET := riscv64gc-unknown-none-elf
 OS_NAME := orca
