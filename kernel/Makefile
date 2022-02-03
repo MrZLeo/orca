@@ -20,9 +20,11 @@ GDBOPTS += -ex 'set arch riscv:rv64'
 GDBOPTS += -ex 'target remote localhost:1234'
 
 build:
-	@echo "[1/2] Building orca..."
+	@echo "[1/3] building user apps..."
+	@cd ../user && make build
+	@echo "[2/3] Building orca..."
 	@cargo build --release
-	@echo "[2/2] Modifying os image..."
+	@echo "[3/3] Modifying os image..."
 	@rust-objcopy --strip-all target/$(TARGET)/release/orca -O binary target/riscv64gc-unknown-none-elf/release/orca.bin
 
 qemu:

@@ -34,7 +34,8 @@ pub fn trap_handler(ctx: &mut Context) -> &mut Context {
             error!("[kernel] Fage fault in application, kernel will kill it");
             batch_schedule();
         }
-        Trap::Exception(Exception::IllegalInstruction) => {
+        Trap::Exception(Exception::IllegalInstruction)
+        | Trap::Exception(Exception::InstructionFault) => {
             error!("[kernel] Illegal Instruction in application, kernel will kill it");
             batch_schedule();
         }

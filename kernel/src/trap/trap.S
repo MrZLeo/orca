@@ -37,7 +37,7 @@ __alltraps:
     call trap_handler # trap_handler(ctx: &context)
 
 __restore:
-    mv sp, a0 # load &context from arg0, change stack to user
+    mv sp, a0
 
     # reverse order: start from sscratch, sepc, sstatus
     ld t0, 33*8(sp)

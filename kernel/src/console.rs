@@ -59,6 +59,7 @@ pub fn println_with_color(s: &str, color: Color) {
 /// - warn: yellow
 /// - debug: green
 /// - trace: white
+/// - kernel: deep_green
 #[macro_export]
 macro_rules! error {
     ($fmt: literal $(, $($arg: tt)+)?) => {
@@ -82,9 +83,9 @@ macro_rules! info {
         $crate::console::print(
             format_args!(
                 concat!(
-                    "\x1b[34;1m",
+                    "\x1b[35;1m",
                     "[INFO]\x1b[0m",
-                    "\x1b[34m ",
+                    "\x1b[35m ",
                     $fmt,
                     "\x1b[0m\n")
                     $(, $($arg)+)?
@@ -136,6 +137,23 @@ macro_rules! trace {
                     "\x1b[1m",
                     "[TRACE]\x1b[0m",
                     "\x1b[2m ",
+                    $fmt,
+                    "\x1b[0m\n")
+                    $(, $($arg)+)?
+            )
+        );
+    };
+}
+
+#[macro_export]
+macro_rules! kernel {
+    ($fmt: literal $(, $($arg: tt)+)?) => {
+        $crate::console::print(
+            format_args!(
+                concat!(
+                    "\x1b[36;1m",
+                    "[KERNEL]\x1b[0m",
+                    "\x1b[36m ",
                     $fmt,
                     "\x1b[0m\n")
                     $(, $($arg)+)?

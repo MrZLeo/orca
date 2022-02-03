@@ -25,7 +25,7 @@ global_asm!(include_str!("link_app.S"));
 pub fn __main() {
     clear_bss();
     sys_info();
-    debug!("[kernel] Hello World!");
+    kernel!("Hello World!");
     trap::trap_init();
     batch::batch_init();
     batch::batch_schedule();

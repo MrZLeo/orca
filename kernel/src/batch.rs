@@ -8,6 +8,7 @@ struct AppManager {
 }
 
 use crate::lang_item::panic;
+use crate::sbi::shutdown;
 use crate::sync::UniProcSafeCell;
 use crate::trap::Context;
 use core::arch::asm;
@@ -41,10 +42,10 @@ lazy_static! {
 
 impl AppManager {
     pub fn app_info(&self) {
-        info!("[kernel] num_app={}", self.len);
+        kernel!("num_app={}", self.len);
         for i in 0..self.len {
-            info!(
-                "[kernel] app_{} [{:#x}, {:#x})",
+            kernel!(
+                "app_{} [{:#x}, {:#x})",
                 i,
                 self.app_start[i],
                 self.app_start[i + 1]
@@ -60,12 +61,17 @@ impl AppManager {
         self.cur_app += 1;
     }
 
+    pub fn len(&self) -> usize {
+        self.len
+    }
+
     unsafe fn load_app(&self, app_id: usize) {
-        if app_id >= self.len {
-            error!("All tasks done");
+        if app_id >= self.len() {
+            warn!("All tasks done");
+            shutdown();
         }
 
-        info!("[kernel] Loading app_{}", app_id);
+        kernel!("Loading app_{}", app_id);
 
         // clear instruction cache
         asm!("fence.i");
@@ -111,7 +117,7 @@ static USER_STACK: Stack = Stack {
 
 impl Stack {
     pub fn sp(&self) -> usize {
-        self.data.as_ptr() as usize + self.data.len()
+        self.data.as_ptr() as usize + KERNEL_STACK_SIZE
     }
 
     pub fn push_ctx(&self, ctx: Context) -> &'static mut Context {
@@ -126,11 +132,13 @@ impl Stack {
 pub fn batch_schedule() -> ! {
     let mut app_manager = APP_MANAGER.borrow_mut();
     let cur_app = app_manager.cur_app();
+    debug!("schedule: cur_app{}", cur_app);
 
     unsafe {
         app_manager.load_app(cur_app);
     }
 
+    debug!("next app!");
     app_manager.next_app();
     drop(app_manager);
 
@@ -140,8 +148,8 @@ pub fn batch_schedule() -> ! {
 
     unsafe {
         __restore(
-            KERNEL_STACK.push_ctx(Context::app_init_cxt(APP_BASE_ADDR, USER_STACK.sp())) as *const _
-                as usize,
+            (KERNEL_STACK.push_ctx(Context::app_init_cxt(APP_BASE_ADDR, USER_STACK.sp()))
+                as *const _) as usize,
         );
     }
 
