@@ -65,6 +65,8 @@ env:
 	@echo "\x1b[1m### Check llvm-tools-preview\x1b[0m"
 	@rustup component add llvm-tools-preview
 
+clean:
+	cargo clean
 
 all: build
 
