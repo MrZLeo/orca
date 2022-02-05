@@ -13,6 +13,7 @@ mod orca_logo;
 mod sbi;
 mod sync;
 mod syscall;
+mod task;
 mod trap;
 
 use console::{println_with_color, GREEN};
@@ -28,7 +29,7 @@ pub fn __main() {
     clear_bss();
     sys_info();
     kernel!("Hello World!");
-    trap::trap_init();
+    trap::init();
     batch::batch_init();
     batch::batch_schedule();
 }

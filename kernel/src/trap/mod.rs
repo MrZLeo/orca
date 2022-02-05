@@ -12,7 +12,7 @@ use riscv::register::{
 
 global_asm!(include_str!("trap.S"));
 
-pub fn trap_init() {
+pub fn init() {
     extern "C" {
         fn __alltraps();
     }
