@@ -6,7 +6,9 @@
 #[macro_use]
 mod console;
 mod batch;
+mod config;
 mod lang_item;
+mod load;
 mod orca_logo;
 mod sbi;
 mod sync;

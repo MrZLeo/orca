@@ -10,14 +10,12 @@ struct AppManager {
 use crate::lang_item::panic;
 use crate::sbi::shutdown;
 use crate::sync::UniProcSafeCell;
-use crate::trap::Context;
+use crate::trap::TrapContext;
 use core::arch::asm;
 use lazy_static::lazy_static;
 
 /// const about AppManager
-const MAX_APP_NUM: usize = 16; // max size of app is 16
-const APP_BASE_ADDR: usize = 0x8040_0000;
-const APP_SIZE_LIMIT: usize = 0x2_0000;
+use crate::config::*;
 
 lazy_static! {
     static ref APP_MANAGER: UniProcSafeCell<AppManager> = unsafe {
@@ -120,8 +118,8 @@ impl Stack {
         self.data.as_ptr() as usize + KERNEL_STACK_SIZE
     }
 
-    pub fn push_ctx(&self, ctx: Context) -> &'static mut Context {
-        let ctx_ptr = (self.sp() - core::mem::size_of::<Context>()) as *mut Context;
+    pub fn push_ctx(&self, ctx: TrapContext) -> &'static mut TrapContext {
+        let ctx_ptr = (self.sp() - core::mem::size_of::<TrapContext>()) as *mut TrapContext;
         unsafe {
             *ctx_ptr = ctx;
             ctx_ptr.as_mut().unwrap()
@@ -148,7 +146,7 @@ pub fn batch_schedule() -> ! {
 
     unsafe {
         __restore(
-            (KERNEL_STACK.push_ctx(Context::app_init_cxt(APP_BASE_ADDR, USER_STACK.sp()))
+            (KERNEL_STACK.push_ctx(TrapContext::app_init_cxt(APP_BASE_ADDR, USER_STACK.sp()))
                 as *const _) as usize,
         );
     }

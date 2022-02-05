@@ -2,7 +2,7 @@ mod context;
 
 use crate::batch::batch_schedule;
 use crate::syscall::syscall;
-pub use context::Context;
+pub use context::TrapContext;
 use core::arch::global_asm;
 use riscv::register::{
     scause::{self, Exception, Trap},
@@ -22,7 +22,7 @@ pub fn trap_init() {
 }
 
 #[no_mangle]
-pub fn trap_handler(ctx: &mut Context) -> &mut Context {
+pub fn trap_handler(ctx: &mut TrapContext) -> &mut TrapContext {
     let scause = scause::read();
     let stval = stval::read();
 
