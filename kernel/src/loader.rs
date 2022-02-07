@@ -1,34 +1,8 @@
 use crate::config::*;
+use crate::stack::KERNEL_STACK;
+use crate::stack::USER_STACK;
 use crate::trap::TrapContext;
 use core::arch::asm;
-
-#[derive(Clone, Copy)]
-#[repr(align(4096))]
-struct Stack {
-    data: [u8; KERNEL_STACK_SIZE],
-}
-
-static KERNEL_STACK: [Stack; MAX_APP_NUM] = [Stack {
-    data: [0; KERNEL_STACK_SIZE],
-}; MAX_APP_NUM];
-
-static USER_STACK: [Stack; MAX_APP_NUM] = [Stack {
-    data: [0; USER_STACK_SIZE],
-}; MAX_APP_NUM];
-
-impl Stack {
-    pub fn sp(&self) -> usize {
-        self.data.as_ptr() as usize + KERNEL_STACK_SIZE
-    }
-
-    pub fn push_ctx(&self, cxt: TrapContext) -> usize {
-        let cxt_ptr = (self.sp() - core::mem::size_of::<TrapContext>()) as *mut TrapContext;
-        unsafe {
-            *cxt_ptr = cxt;
-        }
-        cxt_ptr as usize
-    }
-}
 
 extern "C" {
     fn _num_app();

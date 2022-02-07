@@ -36,7 +36,6 @@ impl TaskScheduler {
         unsafe {
             __switch(cur_ptr, next_ptr);
         }
-        panic!("Unreachable: switch task here");
     }
 
     fn set_cur_status(&self, status: TaskStatus) {
@@ -63,23 +62,7 @@ impl TaskScheduler {
 
     fn run_next(&self) {
         if let Some(next) = self.next_task() {
-            let mut inner = self.inner.borrow_mut();
-            let current = inner.cur_task;
-            inner.tasks[next].status = TaskStatus::Running;
-            inner.cur_task = next;
-            let current_task_cx_ptr = &mut inner.tasks[current].cxt as *mut TaskContext;
-            let next_task_cx_ptr = &inner.tasks[next].cxt as *const TaskContext;
-            // before this, we should drop local variables that must be dropped manually
-            debug!(
-                "shift to {} at 0x{:x}",
-                next,
-                inner.tasks[next].cxt.sp() as usize
-            );
-            drop(inner);
-            unsafe {
-                __switch(current_task_cx_ptr, next_task_cx_ptr);
-            }
-            // go back to user mode
+            self.run(next)
         } else {
             panic!("All tasks finished");
         }

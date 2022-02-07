@@ -1,6 +1,7 @@
 #![no_std]
 #![no_main]
 #![feature(panic_info_message)]
+#![allow(unused)]
 
 #[macro_use]
 mod console;
@@ -9,6 +10,7 @@ mod lang_item;
 mod loader;
 mod orca_logo;
 mod sbi;
+mod stack;
 mod sync;
 mod syscall;
 mod task;
