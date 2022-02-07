@@ -20,6 +20,7 @@ This OS have some features:
     ```bash
     git checkout 94118420a1f709e71bd7f2c355dd73f1601ab63b
     ```
+4. Virtual memory support (developing...)
 
 ## References
 1. xv6-riscv: an elegant educational os https://github.com/mit-pdos/xv6-riscv
