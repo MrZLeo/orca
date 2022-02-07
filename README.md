@@ -1,6 +1,11 @@
 # Orca 虎鲸
 A RISC-V and unix-like operating system developed just for fun.
 
+This OS have some features:
+- Rust
+- RISC-V ISA
+- Based on rcore
+
 ## Schedule
 **In the beginning, orca will follow rcore tutorial to implement basic functions. There are few stages you can find in git-log that according to chapters in rcore tutorial.**
 1. Basic os that can print messages by uart(you can use differnet color to output messages in kernel)
