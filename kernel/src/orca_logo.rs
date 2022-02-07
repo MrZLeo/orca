@@ -9,4 +9,4 @@
 ///
 ///```
 
-pub const ORCA_LOGO: &'static str = include_str!("orca_logo.txt");
+pub const ORCA_LOGO: &str = include_str!("orca_logo.txt");

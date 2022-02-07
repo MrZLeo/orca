@@ -11,7 +11,7 @@ pub fn sys_exit(exit_code: i32) -> ! {
 pub fn sys_yield() -> isize {
     cur_suspend();
     run_next();
-    return 0;
+    0
 }
 
 pub fn sys_time() -> isize {
