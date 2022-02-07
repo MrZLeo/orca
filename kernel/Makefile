@@ -66,6 +66,7 @@ env:
 	@rustup component add llvm-tools-preview
 
 clean:
+	cd ../user && make clean
 	cargo clean
 
 all: build

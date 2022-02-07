@@ -1,6 +1,5 @@
 #![no_std]
 #![feature(linkage)]
-#![allow(unused)]
 #![feature(panic_info_message)]
 
 #[macro_use]
@@ -34,10 +33,19 @@ fn clear_bss() {
 /// syscall for user
 use syscall::*;
 
-fn write(fd: usize, buffer: &[u8]) -> isize {
+pub fn write(fd: usize, buffer: &[u8]) -> isize {
     sys_write(fd, buffer)
 }
 
-fn exit(exit_code: i32) -> isize {
+pub fn exit(exit_code: i32) -> isize {
     sys_exit(exit_code)
+}
+
+/// `yield` is a keyword of rust, we have to use another name for this function
+pub fn user_yield() -> isize {
+    sys_yield()
+}
+
+pub fn time() -> isize {
+    sys_time()
 }

@@ -9,8 +9,7 @@ SECTIONS
 
     stext = .; /* start of text */
     .text : {
-
-    *(.text.entry)
+        *(.text.entry)
         *(.text .text.*)
     }
 
@@ -29,7 +28,7 @@ SECTIONS
     sdata = .; /* start of data */
     .data : {
         *(.data .data.*)
-        *(.sdata sdata.*)
+        *(.sdata .sdata.*)
     }
 
     . = ALIGN(4K);

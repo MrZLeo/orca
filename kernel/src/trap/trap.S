@@ -37,15 +37,14 @@ __alltraps:
     call trap_handler # trap_handler(ctx: &context)
 
 __restore:
-    mv sp, a0
-
     # reverse order: start from sscratch, sepc, sstatus
-    ld t0, 33*8(sp)
+    ld t0, 32*8(sp)
     ld t1, 33*8(sp)
     ld t2, 2*8(sp)
-    csrw sscratch, t2
-    csrw sepc, t1
+
     csrw sstatus, t0
+    csrw sepc, t1
+    csrw sscratch, t2
 
     # restore greneral purpose registers except sp/tp
     ld x1, 1*8(sp)

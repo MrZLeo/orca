@@ -18,10 +18,10 @@ fn sbi_call(id: usize, arg0: usize, arg1: usize, arg2: usize) -> usize {
     unsafe {
         asm!(
             "ecall",
-            inlateout("x10") arg0 => ret,
-            in("x11") arg1,
-            in("x12") arg2,
-            in("x17") id,
+            inlateout("a0") arg0 => ret,
+            in("a1") arg1,
+            in("a2") arg2,
+            in("a7") id,
         );
     }
     ret
@@ -35,4 +35,8 @@ pub fn shutdown() -> ! {
     info!("System shutdown");
     sbi_call(SBI_SHUTDOWN, 0, 0, 0);
     panic!("It should shutdown");
+}
+
+pub fn set_timer(timer: usize) {
+    sbi_call(SBI_SET_TIMER, timer, 0, 0);
 }

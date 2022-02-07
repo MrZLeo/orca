@@ -9,32 +9,20 @@ SECTIONS
         *(.text.entry)
         *(.text .text.*)
     }
-
-    . = ALIGN(4K);
-
     .rodata : {
         *(.rodata .rodata.*)
         *(.srodata .srodata.*)
     }
-
-    . = ALIGN(4K);
     .data : {
         *(.data .data.*)
-        *(.sdata sdata.*)
+        *(.sdata .sdata.*)
     }
-
-    . = ALIGN(4K);
-
     .bss : {
         sbss = .; /* start of bss */
         *(.bss .bss.*)
         *(.sbss .sbss.*)
+        ebss = .; /* end of bss */
     }
-
-    . = ALIGN(4K);
-    ebss = .; /* end of bss */
-
-
     /DISCARD/ : {
         *(.eh_frame)
         *(.debug*)

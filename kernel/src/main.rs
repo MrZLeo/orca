@@ -1,25 +1,21 @@
 #![no_std]
 #![no_main]
 #![feature(panic_info_message)]
-#![allow(unused)]
 
 #[macro_use]
 mod console;
-mod batch;
 mod config;
 mod lang_item;
-mod load;
+mod loader;
 mod orca_logo;
 mod sbi;
 mod sync;
 mod syscall;
 mod task;
+mod timer;
 mod trap;
 
-use console::{println_with_color, GREEN};
 use core::arch::global_asm;
-use lang_item::panic;
-use sbi::shutdown;
 
 global_asm!(include_str!("entry.S"));
 global_asm!(include_str!("link_app.S"));
@@ -30,8 +26,11 @@ pub fn __main() {
     sys_info();
     kernel!("Hello World!");
     trap::init();
-    batch::batch_init();
-    batch::batch_schedule();
+    loader::load_app();
+    trap::enable_timer_interrupt();
+    timer::set_strigger();
+    task::start();
+    panic!("unreachable: __main ended");
 }
 
 fn clear_bss() {
@@ -39,7 +38,11 @@ fn clear_bss() {
         fn sbss();
         fn ebss();
     }
-    (sbss as usize..ebss as usize).for_each(|x| unsafe { (x as *mut u8).write_volatile(0) });
+    // (sbss as usize..ebss as usize).for_each(|x| unsafe { (x as *mut u8).write_volatile(0) });
+    unsafe {
+        core::slice::from_raw_parts_mut(sbss as usize as *mut u8, ebss as usize - sbss as usize)
+            .fill(0)
+    }
 }
 
 fn sys_info() {

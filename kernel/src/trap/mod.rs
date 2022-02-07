@@ -1,13 +1,14 @@
 mod context;
 
-use crate::batch::batch_schedule;
 use crate::syscall::syscall;
+use crate::task::{cur_exit, cur_suspend, run_next};
+use crate::timer::set_strigger;
 pub use context::TrapContext;
 use core::arch::global_asm;
 use riscv::register::{
-    scause::{self, Exception, Trap},
-    stval, stvec,
-    utvec::TrapMode,
+    mtvec::TrapMode,
+    scause::{self, Exception, Interrupt, Trap},
+    sie, stval, stvec,
 };
 
 global_asm!(include_str!("trap.S"));
@@ -35,12 +36,19 @@ pub fn trap_handler(ctx: &mut TrapContext) -> &mut TrapContext {
         }
         Trap::Exception(Exception::StoreFault) | Trap::Exception(Exception::StorePageFault) => {
             error!("[kernel] Fage fault in application, kernel will kill it");
-            batch_schedule();
+            cur_exit();
+            run_next();
         }
         Trap::Exception(Exception::IllegalInstruction)
         | Trap::Exception(Exception::InstructionFault) => {
             error!("[kernel] Illegal Instruction in application, kernel will kill it");
-            batch_schedule();
+            cur_exit();
+            run_next();
+        }
+        Trap::Interrupt(Interrupt::SupervisorTimer) => {
+            set_strigger();
+            cur_suspend();
+            run_next();
         }
         _ => {
             panic!(
@@ -51,4 +59,10 @@ pub fn trap_handler(ctx: &mut TrapContext) -> &mut TrapContext {
         }
     }
     ctx
+}
+
+pub fn enable_timer_interrupt() {
+    unsafe {
+        sie::set_stimer();
+    }
 }

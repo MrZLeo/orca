@@ -18,7 +18,7 @@ static USER_STACK: [Stack; MAX_APP_NUM] = [Stack {
 
 impl Stack {
     pub fn sp(&self) -> usize {
-        self.data.as_ptr() as usize + self.data.len()
+        self.data.as_ptr() as usize + KERNEL_STACK_SIZE
     }
 
     pub fn push_ctx(&self, cxt: TrapContext) -> usize {
@@ -40,8 +40,8 @@ fn apps_ptr() -> *const usize {
 }
 
 #[inline]
-fn num_app() -> usize {
-    unsafe { apps_ptr().read_volatile() }
+pub fn num_app() -> usize {
+    unsafe { ((_num_app as usize) as *const usize).read_volatile() }
 }
 
 #[inline]
@@ -50,7 +50,7 @@ fn base(app_id: usize) -> usize {
 }
 
 pub fn load_app() {
-    let apps_ptr = apps_ptr();
+    let apps_ptr = (_num_app as usize) as *const usize;
     let num_app = num_app();
     let app_start = unsafe { core::slice::from_raw_parts(apps_ptr.add(1), num_app + 1) };
 
@@ -73,7 +73,10 @@ pub fn load_app() {
     }
 }
 
-pub fn init_app_cxt(app_id: usize) -> usize {
+pub fn init_cxt(app_id: usize) -> usize {
+    debug!("app_id: {}", app_id);
+    debug!("basei: {:x}", base(app_id));
+    debug!("user stack sp: {:x}", USER_STACK[app_id].sp());
     KERNEL_STACK[app_id].push_ctx(TrapContext::app_init_cxt(
         base(app_id),
         USER_STACK[app_id].sp(),

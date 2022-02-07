@@ -1,6 +1,19 @@
-use crate::batch::batch_schedule;
+use crate::task::{cur_exit, cur_suspend, run_next};
+use crate::timer::time_ms;
 
 pub fn sys_exit(exit_code: i32) -> ! {
     warn!("[kernel] Application exitd with code {}", exit_code);
-    batch_schedule();
+    cur_exit();
+    run_next();
+    panic!("Unreachable: app exited");
+}
+
+pub fn sys_yield() -> isize {
+    cur_suspend();
+    run_next();
+    return 0;
+}
+
+pub fn sys_time() -> isize {
+    time_ms() as isize
 }

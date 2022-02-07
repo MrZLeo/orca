@@ -7,7 +7,7 @@ pub struct UniProcSafeCell<T> {
 unsafe impl<T> Sync for UniProcSafeCell<T> {}
 
 impl<T> UniProcSafeCell<T> {
-    pub unsafe fn new(value: T) -> Self {
+    pub fn new(value: T) -> Self {
         Self {
             inner: RefCell::new(value),
         }
