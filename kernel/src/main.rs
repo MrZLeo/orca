@@ -32,15 +32,17 @@ pub fn __main() {
     clear_bss();
     sys_info();
     kernel!("Hello World!");
+
+    mm::init_heap();
+    trap::init();
+    loader::load_app();
+    trap::enable_timer_interrupt();
+    timer::set_strigger();
     #[cfg(feature = "kernel_test")]
     {
         test::main();
     }
 
-    trap::init();
-    loader::load_app();
-    trap::enable_timer_interrupt();
-    timer::set_strigger();
     task::start();
     panic!("unreachable: __main ended");
 }

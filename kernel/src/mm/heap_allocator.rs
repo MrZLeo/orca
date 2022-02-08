@@ -20,15 +20,3 @@ pub fn init_heap() {
 pub fn handle_alloc_error(layout: Layout) -> ! {
     panic!("Heap alloc error, layout = {:?}", layout);
 }
-
-pub fn heap_test() {
-    use alloc::boxed::Box;
-    extern "C" {
-        fn sbss();
-        fn ebss();
-    }
-
-    let bss_range = sbss as usize..ebss as usize;
-    let a = Box::new(5);
-    assert_eq!(*a, 5);
-}
