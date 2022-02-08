@@ -53,13 +53,22 @@ pub fn println_with_color(s: &str, color: Color) {
     println!("\x1b[{}m{}\x1b[0m", color.0, s);
 }
 
+pub fn test_ok() {
+    println_with_color("Ok", GREEN);
+}
+
+pub fn test_err() {
+    println_with_color("Err", RED);
+}
+
 /// color for logo
 /// - error: red
-/// - info: blue
+/// - info: purple
 /// - warn: yellow
 /// - debug: green
 /// - trace: white
 /// - kernel: deep_green
+/// - test: blue
 #[macro_export]
 macro_rules! error {
     ($fmt: literal $(, $($arg: tt)+)?) => {
@@ -156,6 +165,23 @@ macro_rules! kernel {
                     "\x1b[36m ",
                     $fmt,
                     "\x1b[0m\n")
+                    $(, $($arg)+)?
+            )
+        );
+    };
+}
+
+#[macro_export]
+macro_rules! test {
+    ($fmt: literal $(, $($arg: tt)+)?) => {
+        $crate::console::print(
+            format_args!(
+                concat!(
+                    "\x1b[34;1m",
+                    "[TEST]\x1b[0m",
+                    "\x1b[34m ",
+                    $fmt,
+                    "\x1b[0m")
                     $(, $($arg)+)?
             )
         );

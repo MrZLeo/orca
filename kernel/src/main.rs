@@ -2,22 +2,27 @@
 #![no_main]
 #![feature(panic_info_message)]
 #![allow(unused)]
+#![feature(alloc_error_handler)]
 
 #[macro_use]
 mod console;
 mod config;
 mod lang_item;
 mod loader;
+mod mm;
 mod orca_logo;
 mod sbi;
 mod stack;
 mod sync;
 mod syscall;
 mod task;
+mod test;
 mod timer;
 mod trap;
 
 use core::arch::global_asm;
+
+extern crate alloc;
 
 global_asm!(include_str!("entry.S"));
 global_asm!(include_str!("link_app.S"));
@@ -27,6 +32,11 @@ pub fn __main() {
     clear_bss();
     sys_info();
     kernel!("Hello World!");
+    #[cfg(feature = "kernel_test")]
+    {
+        test::main();
+    }
+
     trap::init();
     loader::load_app();
     trap::enable_timer_interrupt();

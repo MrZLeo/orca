@@ -3,6 +3,7 @@
 # 	- make qemu: run os and stop when qemu start
 # 	- make debug: build in debug mode
 # 	- make gdb: open gdb and connect to os which is started, **os must be build in debug mode**
+# 	- make test: build and run test
 # 	- make qeun: build and qemu
 # 	- make env: build the basic environment for rust compiler
 
@@ -31,38 +32,57 @@ GDBOPTS = -ex 'file $(DEBUG_DIR)/$(OS_NAME)'
 GDBOPTS += -ex 'set arch riscv:rv64'
 GDBOPTS += -ex 'target remote localhost:1234'
 
-
-build:
+user:
 	@echo "### building user apps..."
 	@cd ../user && make build
-	@echo "### Building orca..."
-	@cargo build --release
-	@echo "### Modifying os image..."
-	@rust-objcopy --strip-all $(RELEASE_DIR)/$(OS_NAME) -O binary $(RELEASE_DIR)/$(OS_BIN)
 
 qemu:
 	@echo "### Booting system..."
 	@$(QEMU) $(QEMUOPTS)
 
+release_build:
+	@echo "### Building orca..."
+	@cargo build --release
+
+release_objcopy:
+	@echo "### Modifying os image..."
+	@rust-objcopy --strip-all $(RELEASE_DIR)/$(OS_NAME) -O binary $(RELEASE_DIR)/$(OS_BIN)
+
+build: release_build release_objcopy
+
 run: build qemu
 
-debug:
-	cd ../user && make build
+debug_build:
+	@echo "### Building orca..."
 	cargo build
+
+debug_objcopy:
+	@echo "### Modifying os image..."
 	rust-objcopy --strip-all $(DEBUG_DIR)/$(OS_NAME) -O binary $(DEBUG_DIR)/$(OS_BIN)
+
+debug_qemu:
 	$(QEMU) $(QEMUOPTS_DEBUG)
+
+debug: user debug_build debug_objcopy debug_qemu
+
+test_build:
+	@echo "### Building orca..."
+	@cargo build --features "kernel_test" --release
+
+
+test: user test_build release_objcopy qemu
 
 gdb:
 	$(GDB) $(GDBOPTS)
 
 env:
-	@echo "\x1b[1m### Check target\x1b[0m"
+	@echo "### Check target"
 	@(rustup target list | grep "$(TARGET) (installed)") || @rustup target add $(TARGET)
-	@echo "\x1b[1m### Check cargo-binutils\x1b[0m"
+	@echo "### Check cargo-binutils"
 	@cargo install cargo-binutils
-	@echo "\x1b[1m### Check rust-src\x1b[0m"
+	@echo "### Check rust-src"
 	@rustup component add rust-src
-	@echo "\x1b[1m### Check llvm-tools-preview\x1b[0m"
+	@echo "### Check llvm-tools-preview"
 	@rustup component add llvm-tools-preview
 
 clean:
