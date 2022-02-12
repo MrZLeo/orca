@@ -91,7 +91,7 @@ impl TaskScheduler {
         inner.tasks[cur].user_token()
     }
 
-    fn cur_trap_cxt(&self) -> &mut TrapContext {
+    fn cur_trap_cxt(&self) -> &'static mut TrapContext {
         let mut inner = self.inner.borrow_mut();
         let cur = inner.cur_task;
         inner.tasks[cur].trap_cxt()
