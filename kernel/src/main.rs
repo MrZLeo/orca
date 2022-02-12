@@ -44,6 +44,10 @@ pub fn __main() {
         test::main();
     }
 
+    debug!("syscall test");
+    let t = syscall::sys_time();
+    debug!("t: {}", t);
+
     task::start();
     panic!("unreachable: __main ended");
 }

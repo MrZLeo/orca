@@ -57,6 +57,7 @@ pub fn trap_handler() -> ! {
             )
         }
     }
+
     trap_return();
 }
 

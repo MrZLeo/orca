@@ -8,7 +8,7 @@ const SYSCALL_YIELD: usize = 124;
 const SYSCALL_TIME: usize = 169;
 
 use fs::*;
-use proc::*;
+pub use proc::*;
 
 /// general syscall implementation
 pub fn syscall(id: usize, args: [usize; 3]) -> isize {
