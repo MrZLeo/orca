@@ -1,10 +1,15 @@
 use riscv::register::sstatus::{self, Sstatus, SPP};
 
+use super::trap_handler;
+
 #[repr(C)]
 pub struct TrapContext {
     pub x: [usize; 32],
     pub sstatus: Sstatus,
     pub sepc: usize,
+    pub kernel_satp: usize,
+    pub kernel_sp: usize,
+    pub trap_handler: usize,
 }
 
 impl TrapContext {
@@ -12,13 +17,22 @@ impl TrapContext {
         self.x[2] = sp;
     }
 
-    pub fn app_init_cxt(entry: usize, sp: usize) -> Self {
+    pub fn app_init_cxt(
+        entry: usize,
+        sp: usize,
+        kernel_satp: usize,
+        kernel_sp: usize,
+        trap_handler: usize,
+    ) -> Self {
         let mut sstatus = sstatus::read();
         sstatus.set_spp(SPP::User);
         let mut ctx = Self {
             x: [0; 32],
             sstatus,
             sepc: entry,
+            kernel_satp,
+            kernel_sp,
+            trap_handler,
         };
         ctx.set_sp(sp);
         ctx

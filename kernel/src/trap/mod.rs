@@ -1,10 +1,12 @@
 mod context;
 
+use crate::config::{TRAMPOLINE, TRAP_CONTEXT};
+use crate::lang_item::panic;
 use crate::syscall::syscall;
-use crate::task::{cur_exit, cur_suspend, run_next};
+use crate::task::{cur_exit, cur_suspend, cur_trap_cxt, cur_user_token, run_next};
 use crate::timer::set_strigger;
 pub use context::TrapContext;
-use core::arch::global_asm;
+use core::arch::{asm, global_asm};
 use riscv::register::{
     mtvec::TrapMode,
     scause::{self, Exception, Interrupt, Trap},
@@ -14,16 +16,13 @@ use riscv::register::{
 global_asm!(include_str!("trap.S"));
 
 pub fn init() {
-    extern "C" {
-        fn __alltraps();
-    }
-    unsafe {
-        stvec::write(__alltraps as usize, TrapMode::Direct);
-    }
+    set_kernel_trap_entry();
 }
 
 #[no_mangle]
-pub fn trap_handler(ctx: &mut TrapContext) -> &mut TrapContext {
+pub fn trap_handler() -> ! {
+    set_kernel_trap_entry();
+    let cxt = cur_trap_cxt();
     let scause = scause::read();
     let stval = stval::read();
 
@@ -31,8 +30,8 @@ pub fn trap_handler(ctx: &mut TrapContext) -> &mut TrapContext {
     match scause.cause() {
         // syscall interface
         Trap::Exception(Exception::UserEnvCall) => {
-            ctx.sepc += 4;
-            ctx.x[10] = syscall(ctx.x[17], [ctx.x[10], ctx.x[11], ctx.x[12]]) as usize;
+            cxt.sepc += 4;
+            cxt.x[10] = syscall(cxt.x[17], [cxt.x[10], cxt.x[11], cxt.x[12]]) as usize;
         }
         Trap::Exception(Exception::StoreFault) | Trap::Exception(Exception::StorePageFault) => {
             error!("[kernel] Fage fault in application, kernel will kill it");
@@ -58,11 +57,51 @@ pub fn trap_handler(ctx: &mut TrapContext) -> &mut TrapContext {
             )
         }
     }
-    ctx
+    trap_return();
 }
 
 pub fn enable_timer_interrupt() {
     unsafe {
         sie::set_stimer();
     }
+}
+
+pub fn set_kernel_trap_entry() {
+    unsafe {
+        stvec::write(trap_from_kernel as usize, TrapMode::Direct);
+    }
+}
+
+#[no_mangle]
+pub fn trap_from_kernel() -> ! {
+    panic!("a trap from kernel")
+}
+
+fn set_user_trap_entry() {
+    unsafe {
+        stvec::write(TRAMPOLINE as usize, TrapMode::Direct);
+    }
+}
+
+#[no_mangle]
+pub fn trap_return() -> ! {
+    set_user_trap_entry();
+    let trap_cxt_ptr = TRAP_CONTEXT;
+    let user_satp = cur_user_token();
+    extern "C" {
+        fn __alltraps();
+        fn __restore();
+    }
+    let restore_va = __restore as usize - __alltraps as usize + TRAMPOLINE;
+    unsafe {
+        asm!("fence.i",
+            "jr {restore_va}",
+            restore_va = in(reg) restore_va,
+            in("a0") trap_cxt_ptr,
+            in("a1") user_satp,
+            options(noreturn)
+        );
+    }
+
+    panic!("Unreachable: trap_return");
 }

@@ -6,13 +6,12 @@
     ld x\n, \n*8(sp)
 .endm
 
-    .section .text
+    .section .text.trampoline
     .globl __alltraps
     .globl __restore
     .align 2
 __alltraps:
     csrrw sp, sscratch, sp
-    addi sp, sp, -34*8
     sd x1, 1*8(sp)
     # skip x2(sp), save latter
     sd x3, 3*8(sp)
@@ -33,18 +32,38 @@ __alltraps:
     csrr t2, sscratch
     sd t2, 2*8(sp)
 
-    mv a0, sp
-    call trap_handler # trap_handler(ctx: &context)
+    # load kernel_satp
+    ld t0, 34*8(sp)
+    # load trap_handler
+    ld t1, 36*8(sp)
+    # move to kernel_sp
+    ld sp, 35*8(sp)
+
+
+    # switch to kernel space
+    csrw satp, t0
+    # clear cache
+    sfence.vma
+
+    # jump to trap_handler
+    jr t1
 
 __restore:
+    # a0: *TrapContext in user space(Constant)
+    # a1: user space token
+    csrw satp, a1
+    sfence.vma
+    csrw sscratch, a0
+
+    mv sp, a0
+
+    # sp -> *TrapContext | user space
     # reverse order: start from sscratch, sepc, sstatus
     ld t0, 32*8(sp)
     ld t1, 33*8(sp)
-    ld t2, 2*8(sp)
 
     csrw sstatus, t0
     csrw sepc, t1
-    csrw sscratch, t2
 
     # restore greneral purpose registers except sp/tp
     ld x1, 1*8(sp)
@@ -55,8 +74,7 @@ __restore:
         .set n, n+1
     .endr
 
-    addi sp, sp, 34*8
 
-    # change stack (sp -> user stack; sscratch -> kernel)
-    csrrw sp, sscratch, sp
+    # back to user stack
+    ld sp, 2*8(sp)
     sret

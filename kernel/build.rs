@@ -7,7 +7,7 @@ static TARGET_DIR: &str = "../user/target/riscv64gc-unknown-none-elf/release/";
 fn init_app_data() -> Result<()> {
     let mut file = File::create("src/link_app.S").unwrap();
 
-    // get file name `xxx.bin`, and reduce `.bin`
+    // get file name `xxx.rs`, and reduce `.rs`
     // all name store in `apps`
     let mut apps: Vec<_> = read_dir("../user/src/bin")
         .unwrap()
@@ -47,8 +47,9 @@ _num_app:
     .section .data
     .global app_{0}_start
     .global app_{0}_end
+    .align 3
 app_{0}_start:
-    .incbin "{2}{1}.bin"
+    .incbin "{2}{1}"
 app_{0}_end:"#,
             idx, app, TARGET_DIR
         )?;

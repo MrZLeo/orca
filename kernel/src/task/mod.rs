@@ -3,9 +3,11 @@ mod switch;
 #[allow(clippy::module_inception)]
 mod task;
 
-use crate::config::MAX_APP_NUM;
-use crate::loader::{init_cxt, num_app};
+use crate::loader::get_app_data;
+use crate::loader::num_app;
 use crate::sync::UniProcSafeCell;
+use crate::trap::TrapContext;
+use alloc::vec::Vec;
 pub use context::TaskContext;
 use lazy_static::*;
 pub use switch::__switch;
@@ -17,7 +19,7 @@ pub struct TaskScheduler {
 }
 
 struct TaskSchedulerInner {
-    tasks: [TaskControlBlock; MAX_APP_NUM],
+    tasks: Vec<TaskControlBlock>,
     cur_task: usize, // current task's index
 }
 
@@ -82,46 +84,61 @@ impl TaskScheduler {
         }
         panic!("unreachable in run_first_task!");
     }
+
+    fn cur_token(&self) -> usize {
+        let inner = self.inner.borrow_mut();
+        let cur = inner.cur_task;
+        inner.tasks[cur].user_token()
+    }
+
+    fn cur_trap_cxt(&self) -> &mut TrapContext {
+        let mut inner = self.inner.borrow_mut();
+        let cur = inner.cur_task;
+        inner.tasks[cur].trap_cxt()
+    }
 }
 
 lazy_static! {
-    pub static ref TASK_SCHED: TaskScheduler = {
-        let mut tasks = [TaskControlBlock {
-            cxt: TaskContext::from_zero(),
-            status: task::TaskStatus::UnInit,
-        }; MAX_APP_NUM];
-
-        for (i, task) in tasks.iter_mut().enumerate() {
-            task.cxt = TaskContext::with_restore(init_cxt(i));
-            task.status = TaskStatus::Ready;
-        }
-
-        let inner = TaskSchedulerInner { tasks, cur_task: 0 };
+    pub static ref TASK_SCHEDULER: TaskScheduler = {
+        info!("init TASK_SCHEDULER");
         let num_app = num_app();
+        info!("num_app = {}", num_app);
+        let mut tasks: Vec<TaskControlBlock> = Vec::new();
+        for i in 0..num_app {
+            tasks.push(TaskControlBlock::new(get_app_data(i), i));
+        }
 
         TaskScheduler {
             num_app,
-            inner: UniProcSafeCell::new(inner),
+            inner: UniProcSafeCell::new(TaskSchedulerInner { tasks, cur_task: 0 }),
         }
     };
 }
 
 /// start running apps
 pub fn start() {
-    TASK_SCHED.start();
+    TASK_SCHEDULER.start();
 }
 
 /// stop cur app (make it sleep and change cpu to other app)
 pub fn cur_suspend() {
-    TASK_SCHED.cur_suspend();
+    TASK_SCHEDULER.cur_suspend();
 }
 
 /// run next app
 pub fn run_next() {
-    TASK_SCHED.run_next();
+    TASK_SCHEDULER.run_next();
 }
 
 /// cur app finished or cause error and be killed
 pub fn cur_exit() {
-    TASK_SCHED.cur_exit();
+    TASK_SCHEDULER.cur_exit();
+}
+
+pub fn cur_user_token() -> usize {
+    TASK_SCHEDULER.cur_token()
+}
+
+pub fn cur_trap_cxt() -> &'static mut TrapContext {
+    TASK_SCHEDULER.cur_trap_cxt()
 }

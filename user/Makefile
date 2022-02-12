@@ -8,10 +8,10 @@ OBJCOPY := rust-objcopy --binary-architecture=riscv64
 
 build:
 	@echo "[1/3] Build"
-	@python3 build.py
+	@cargo build --release
 	@echo "[2/3] Changging file"
 	# $(foreach elf, $(ELFS), $(OBJCOPY) $(elf) --strip-all -O binary $(elf).bin;)
-	$(foreach elf, $(ELFS), $(OBJCOPY) $(elf) --strip-all -O binary $(patsubst $(TARGET_DIR)/%, $(TARGET_DIR)/%.bin, $(elf));)
+	# $(foreach elf, $(ELFS), $(OBJCOPY) $(elf) --strip-all -O binary $(patsubst $(TARGET_DIR)/%, $(TARGET_DIR)/%.bin, $(elf));)
 	@echo "[3/3] Finished"
 
 clean:

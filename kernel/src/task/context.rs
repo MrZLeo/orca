@@ -1,3 +1,5 @@
+use crate::trap::trap_return;
+
 #[derive(Clone, Copy)]
 #[repr(C)]
 pub struct TaskContext {
@@ -15,11 +17,8 @@ impl TaskContext {
         Self::new(0, 0, [0; 12])
     }
 
-    pub fn with_restore(sp: usize) -> Self {
-        extern "C" {
-            fn __restore();
-        }
-        Self::new(__restore as usize, sp, [0; 12])
+    pub fn with_trap_return(sp: usize) -> Self {
+        Self::new(trap_return as usize, sp, [0; 12])
     }
 
     pub fn sp(&self) -> usize {

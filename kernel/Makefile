@@ -50,7 +50,7 @@ release_objcopy:
 
 build: release_build release_objcopy
 
-run: build qemu
+run: user build qemu
 
 debug_build:
 	@echo "### Building orca..."

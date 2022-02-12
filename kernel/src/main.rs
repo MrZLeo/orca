@@ -12,13 +12,15 @@ mod loader;
 mod mm;
 mod orca_logo;
 mod sbi;
-mod stack;
 mod sync;
 mod syscall;
 mod task;
 mod test;
 mod timer;
 mod trap;
+
+#[macro_use]
+extern crate bitflags;
 
 use core::arch::global_asm;
 
@@ -33,9 +35,8 @@ pub fn __main() {
     sys_info();
     kernel!("Hello World!");
 
-    mm::init_heap();
+    mm::init();
     trap::init();
-    loader::load_app();
     trap::enable_timer_interrupt();
     timer::set_strigger();
     #[cfg(feature = "kernel_test")]
@@ -69,7 +70,7 @@ fn sys_info() {
         fn erodata();
         fn sdata();
         fn edata();
-        fn sbss();
+        fn sbss_with_stack();
         fn ebss();
     }
     print!("\x1b[1m{}\x1b[0m", orca_logo::ORCA_LOGO);
@@ -80,5 +81,8 @@ fn sys_info() {
     info!(".text [{:#x}, {:#x}]", stext as usize, etext as usize);
     info!(".rodata [{:#x}, {:#x}]", srodata as usize, erodata as usize);
     info!(".data [{:#x}, {:#x}]", sdata as usize, edata as usize);
-    info!(".bss [{:#x}, {:#x}]", sbss as usize, ebss as usize);
+    info!(
+        ".bss [{:#x}, {:#x}]",
+        sbss_with_stack as usize, ebss as usize
+    );
 }

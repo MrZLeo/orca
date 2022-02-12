@@ -1,6 +1,6 @@
 OUTPUT_ARCH( "riscv" )
 ENTRY( _start )
-BASE_ADDRESS = 0x80400000;
+BASE_ADDRESS = 0x10000;
 
 SECTIONS
 {
@@ -9,20 +9,24 @@ SECTIONS
         *(.text.entry)
         *(.text .text.*)
     }
+    /* .text   => R | X
+     * .rodata => R
+     * .data   => R | W
+     * they have different permission, so they have to be aligned
+     */
+    . = ALIGN(4K);
     .rodata : {
         *(.rodata .rodata.*)
-        *(.srodata .srodata.*)
     }
+    . = ALIGN(4K);
     .data : {
         *(.data .data.*)
-        *(.sdata .sdata.*)
     }
+    sbss = .;
     .bss : {
-        sbss = .; /* start of bss */
         *(.bss .bss.*)
-        *(.sbss .sbss.*)
-        ebss = .; /* end of bss */
     }
+    ebss = .;
     /DISCARD/ : {
         *(.eh_frame)
         *(.debug*)
