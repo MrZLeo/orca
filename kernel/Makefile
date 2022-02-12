@@ -85,6 +85,16 @@ env:
 	@echo "### Check llvm-tools-preview"
 	@rustup component add llvm-tools-preview
 
+kernel_check:
+	@echo "### Checking kernel..."
+	@cargo clippy
+
+user_check:
+	@echo "### Checking user..."
+	@cd ../user && cargo clippy
+
+check: user_check kernel_check
+
 clean:
 	cd ../user && make clean
 	cargo clean
