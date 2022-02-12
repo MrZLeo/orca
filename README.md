@@ -13,19 +13,24 @@ This OS have some features:
 
 ### 2022-1-31
 Basic os that can print messages by uart(you can use differnet color to output messages in kernel)
-    ```
-    git checkout c1ba7a0b2f0829ebe878a0eff856f1a51b21b901
-    ```
+
+```
+git checkout c1ba7a0b2f0829ebe878a0eff856f1a51b21b901
+```
+
 ### 2022-2-3
 Batch os that can run different user applications one by one(limited syscall supported)
-    ```
-    git checkout 31b4a9b396336b94defb9404091122933b5bcd75
-    ```
+
+```
+git checkout 31b4a9b396336b94defb9404091122933b5bcd75
+```
+
 ### 2022-2-7
 OS that allows time slice and change differnet task to run
-    ```
-    git checkout 94118420a1f709e71bd7f2c355dd73f1601ab63b
-    ```
+
+```
+git checkout 94118420a1f709e71bd7f2c355dd73f1601ab63b
+```
 
 ### 2022-2-8 Test Architecture for orca
 This is a test architecture for orca, which is simple but good enough to support orca kernel test.
@@ -52,6 +57,10 @@ pub fn mm_test() {
 ```
 6. import my module in `mod.rs`, call the interface `mm_test`
 
+```
+git checkout a4eceef4b0f8f95f8b231bf47a6298e55813939e
+```
+
 
 ### 2022-2-12 Virtual memory support
 Orca release new version that support virtual address space. It is still a initial version, and there are few works to do in future.
@@ -62,9 +71,10 @@ Until now, these works is still transparent outside the OS.
 - more efficent task scheduler
 - more efficent frame allocator
 - **posix interface**(next version!)
-    ```
-    git checkout 504f206d1b891182c8de5599506df2e10e5f8232
-    ```
+
+```
+git checkout 504f206d1b891182c8de5599506df2e10e5f8232
+```
 
 ## References
 1. xv6-riscv: an elegant educational os https://github.com/mit-pdos/xv6-riscv
