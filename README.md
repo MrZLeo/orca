@@ -11,23 +11,60 @@ This OS have some features:
 
 **In the beginning, orca will follow rcore tutorial to implement basic functions. There are few stages you can find in git-log that according to chapters in rcore tutorial.**
 
-1. Basic os that can print messages by uart(you can use differnet color to output messages in kernel)
+### 2022-1-31
+Basic os that can print messages by uart(you can use differnet color to output messages in kernel)
     ```
     git checkout c1ba7a0b2f0829ebe878a0eff856f1a51b21b901
     ```
-2. Batch os that can run different user applications one by one(limited syscall supported)
+### 2022-2-3
+Batch os that can run different user applications one by one(limited syscall supported)
     ```
     git checkout 31b4a9b396336b94defb9404091122933b5bcd75
     ```
-3. OS that allows time slice and change differnet task to run
+### 2022-2-7
+OS that allows time slice and change differnet task to run
     ```
     git checkout 94118420a1f709e71bd7f2c355dd73f1601ab63b
     ```
-4. Virtual memory support
+
+### 2022-2-8 Test Architecture for orca
+This is a test architecture for orca, which is simple but good enough to support orca kernel test.
+
+In test directory, you can design your own test module and bind it to `mod.rs`. It is better to name your module like `xx_test.rs`
+
+In your module, you should desigin a interface like `xx_test`, which contains your whole test procedure. Pay attention that your test function must be use by `test_fn`, which can help us records test result. After that, call it in `main` of `mod.rs`
+
+Test functions is used like `assert!()` macro, but `assert` macro will panic if test don't pass, which can't be use to records test result.
+
+1. Define test module `mm_test.rs` in directory `test`
+2. Define test interface `mm_test`
+3. Define variable `MM_TEST_NUM` to store the number of test in this module
+4. Define two test function: `heap_test` and `heap_test2`
+5. In `mm_test()`, call test function:
+```rust
+pub fn mm_test() {
+    test!("Memory Test Start: Running {} test\n", MM_TEST_NUM);
+    test!("heap test1...");
+    test_fn(heap_test);
+    test!("heap test2...");
+    test_fn(heap_test2);
+}
+```
+6. import my module in `mod.rs`, call the interface `mm_test`
+
+
+### 2022-2-12 Virtual memory support
+Orca release new version that support virtual address space. It is still a initial version, and there are few works to do in future.
+
+Until now, these works is still transparent outside the OS.
+
+- more capable syscall: new systime, mmap, munmap...
+- more efficent task scheduler
+- more efficent frame allocator
+- **posix interface**(next version!)
     ```
     git checkout 504f206d1b891182c8de5599506df2e10e5f8232
     ```
-5. Process support (developing...)
 
 ## References
 1. xv6-riscv: an elegant educational os https://github.com/mit-pdos/xv6-riscv
