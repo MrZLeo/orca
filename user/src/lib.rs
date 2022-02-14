@@ -1,9 +1,11 @@
 #![no_std]
 #![feature(linkage)]
 #![feature(panic_info_message)]
+#![feature(alloc_error_handler)]
 
 #[macro_use]
 pub mod console;
+mod heap_allocator;
 mod lang_item;
 mod syscall;
 
@@ -11,6 +13,7 @@ mod syscall;
 #[link_section = ".text.entry"]
 pub extern "C" fn _start() -> ! {
     clear_bss();
+    heap_allocator::init();
     exit(main());
     panic!("unreachable");
 }
@@ -33,6 +36,10 @@ fn clear_bss() {
 /// syscall for user
 use syscall::*;
 
+pub fn read(fd: usize, buffer: &mut [u8]) -> isize {
+    sys_read(fd, buffer)
+}
+
 pub fn write(fd: usize, buffer: &[u8]) -> isize {
     sys_write(fd, buffer)
 }
@@ -48,4 +55,34 @@ pub fn user_yield() -> isize {
 
 pub fn time() -> isize {
     sys_time()
+}
+
+pub fn getpid() -> isize {
+    sys_getpid()
+}
+
+pub fn fork() -> isize {
+    sys_fork()
+}
+
+pub fn exec(path: &str) -> isize {
+    sys_exec(path)
+}
+
+pub fn wait(exit_code: &mut i32) -> isize {
+    loop {
+        match sys_waitpid(-1, exit_code as *mut _) {
+            -2 => user_yield(),
+            exit_pid => return exit_pid,
+        };
+    }
+}
+
+pub fn waitpid(pid: usize, exit_code: &mut i32) -> isize {
+    loop {
+        match sys_waitpid(pid as isize, exit_code as *mut _) {
+            -2 => user_yield(),
+            exit_pid => return exit_pid,
+        };
+    }
 }

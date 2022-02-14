@@ -1,4 +1,4 @@
-use crate::write;
+use crate::{read, write};
 use core::fmt::{self, Write};
 
 /// std input & output & error
@@ -31,4 +31,30 @@ macro_rules! println {
     ($fmt: literal $(, $($arg: tt)+)?) => {
         $crate::console::print(format_args!(concat!($fmt, "\n") $(, $($arg)+)?));
     }
+}
+
+pub struct Color(usize);
+
+// hex presentation of color
+pub const BLACK: Color = Color(30);
+pub const RED: Color = Color(31);
+pub const GREEN: Color = Color(32);
+pub const YELLOW: Color = Color(33);
+pub const BLUE: Color = Color(34);
+pub const PURPLE: Color = Color(35);
+pub const DEEP_GREEN: Color = Color(36);
+pub const WHITE: Color = Color(37);
+
+pub fn print_with_color(s: &str, color: Color) {
+    print!("\x1b[{}m{}\x1b[0m", color.0, s);
+}
+
+pub fn println_with_color(s: &str, color: Color) {
+    println!("\x1b[{}m{}\x1b[0m", color.0, s);
+}
+
+pub fn getchar() -> u8 {
+    let mut c = [0u8; 1];
+    read(STDIN, &mut c);
+    c[0]
 }
