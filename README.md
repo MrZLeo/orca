@@ -23,19 +23,19 @@ There are lots of make commands(which will grow together with kernel), and I lis
 
 #### Kernel Make Commands
 
-- make build: compile os
-- make qemu: run os
-- make debug: build in debug mode
-- make gdb: open gdb and connect to os which is started, **os must be build in debug mode**
-- make test: build and run test
-- make qeun: build and qemu
-- make env: build the basic environment for rust compiler
-- make clean: remove target directory
+- `make build`: compile os
+- `make qemu`: run os
+- `make debug`: build in debug mode
+- `make gdb`: open gdb and connect to os which is started, **os must be build in debug mode**
+- `make test`: build and run test
+- `make run`: build and qemu
+- `make env`: build the basic environment for rust compiler
+- `make clean`: remove target directory
 
 #### User Make Commands
 
-- make build: compile user codes and modify the binary if necessary
-- make clean: remove target directory
+- `make build`: compile user codes and modify the binary if necessary
+- `make clean`: remove target directory
 
 ## Change Log
 
