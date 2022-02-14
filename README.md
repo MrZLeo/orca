@@ -7,6 +7,36 @@ This OS have some features:
 - RISC-V ISA
 - Based on rcore
 
+## Get Start
+
+In order to set enviroment correctly, you should pay attention to your toolchains carefully.
+
+### Rust toolchains
+
+- rustc nightly(I will keep following the newest rustc version, until 2022-2-14, it is vers 1.60)
+- risc-v target: we will install them automatically by make commands which will be introduced next
+- other utilities: we will install them automatically by make commands which will introduced next
+
+### Make Commands
+
+There are lots of make commands(which will grow together with kernel), and I list them here to make you understand what to do.
+
+#### Kernel Make Commands
+
+- make build: compile os
+- make qemu: run os
+- make debug: build in debug mode
+- make gdb: open gdb and connect to os which is started, **os must be build in debug mode**
+- make test: build and run test
+- make qeun: build and qemu
+- make env: build the basic environment for rust compiler
+- make clean: remove target directory
+
+#### User Make Commands
+
+- make build: compile user codes and modify the binary if necessary
+- make clean: remove target directory
+
 ## Change Log
 
 **In the beginning, orca will follow rcore tutorial to implement basic functions. There are few stages you can find in git-log that according to chapters in rcore tutorial.**
