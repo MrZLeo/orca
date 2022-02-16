@@ -1,5 +1,6 @@
 use super::address::PhysAddr;
 use super::address::PhysPageNum;
+use crate::config::ekernel;
 use crate::config::MEMORY_END;
 use crate::sync::UniProcSafeCell;
 use alloc::vec::Vec;
@@ -66,14 +67,11 @@ type FrameAllocatorImpl = StackFrameAllocator;
 
 lazy_static! {
     pub static ref FRAME_ALLOCATOR: UniProcSafeCell<FrameAllocatorImpl> =
-        unsafe { UniProcSafeCell::new(FrameAllocatorImpl::new()) };
+        UniProcSafeCell::new(FrameAllocatorImpl::new());
 }
 
 // pub interface
 pub fn init() {
-    extern "C" {
-        fn ekernel();
-    }
     FRAME_ALLOCATOR.borrow_mut().init(
         PhysAddr::from(ekernel as usize).ceil(),
         PhysAddr::from(MEMORY_END).floor(),

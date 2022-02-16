@@ -22,6 +22,19 @@ mod trap;
 #[macro_use]
 extern crate bitflags;
 
+// import position of differnet sections
+use crate::config::ebss;
+use crate::config::edata;
+use crate::config::ekernel;
+use crate::config::erodata;
+use crate::config::etext;
+use crate::config::sbss;
+use crate::config::sbss_with_stack;
+use crate::config::sdata;
+use crate::config::skernel;
+use crate::config::srodata;
+use crate::config::stext;
+
 use core::arch::global_asm;
 
 extern crate alloc;
@@ -53,10 +66,6 @@ pub fn __main() {
 }
 
 fn clear_bss() {
-    extern "C" {
-        fn sbss();
-        fn ebss();
-    }
     // (sbss as usize..ebss as usize).for_each(|x| unsafe { (x as *mut u8).write_volatile(0) });
     unsafe {
         core::slice::from_raw_parts_mut(sbss as usize as *mut u8, ebss as usize - sbss as usize)
@@ -65,18 +74,6 @@ fn clear_bss() {
 }
 
 fn sys_info() {
-    extern "C" {
-        fn skernel();
-        fn ekernel();
-        fn stext();
-        fn etext();
-        fn srodata();
-        fn erodata();
-        fn sdata();
-        fn edata();
-        fn sbss_with_stack();
-        fn ebss();
-    }
     print!("\x1b[1m{}\x1b[0m", orca_logo::ORCA_LOGO);
     info!(
         "kernel range [{:#x}, {:#x}]",

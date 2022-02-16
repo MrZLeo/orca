@@ -1,7 +1,3 @@
-use crate::config::*;
-use crate::trap::TrapContext;
-use core::arch::asm;
-
 extern "C" {
     fn _num_app();
 }

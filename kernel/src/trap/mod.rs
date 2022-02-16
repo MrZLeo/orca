@@ -103,6 +103,4 @@ pub fn trap_return() -> ! {
             options(noreturn)
         );
     }
-
-    panic!("Unreachable: trap_return");
 }

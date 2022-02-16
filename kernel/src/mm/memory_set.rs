@@ -14,18 +14,17 @@ use super::{
     page_table::{PTEFlags, PageTable, PageTableEntry},
 };
 
-extern "C" {
-    fn stext();
-    fn etext();
-    fn srodata();
-    fn erodata();
-    fn sdata();
-    fn edata();
-    fn sbss_with_stack();
-    fn ebss();
-    fn ekernel();
-    fn strampoline();
-}
+// import position of differnet sections
+use crate::config::ebss;
+use crate::config::edata;
+use crate::config::ekernel;
+use crate::config::erodata;
+use crate::config::etext;
+use crate::config::sbss_with_stack;
+use crate::config::sdata;
+use crate::config::srodata;
+use crate::config::stext;
+use crate::config::strampoline;
 
 pub struct MapArea {
     vpn_range: VPNRange,

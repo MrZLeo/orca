@@ -2,7 +2,7 @@ use crate::{
     config::{kernel_stack_position, TRAP_CONTEXT},
     mm::{
         address::{PhysPageNum, VirtAddr},
-        memory_set::{self, MapPermission, MemorySet, KERNEL_SPACE},
+        memory_set::{MapPermission, MemorySet, KERNEL_SPACE},
     },
     trap::{trap_handler, TrapContext},
 };

@@ -138,7 +138,7 @@ impl PageTable {
 }
 
 pub fn translated_byte_buffer(token: usize, ptr: *const u8, len: usize) -> Vec<&'static [u8]> {
-    let mut page_table = PageTable::from_token(token);
+    let page_table = PageTable::from_token(token);
     let mut start = ptr as usize;
     let end = start + len;
     let mut v = Vec::new();

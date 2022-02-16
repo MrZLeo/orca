@@ -32,8 +32,6 @@
 //! 6. import my module in `mod.rs`, call the interface `mm_test`
 //!
 
-use core::borrow::BorrowMut;
-
 use crate::{
     console::{print_with_color, println_with_color, test_err, test_ok, GREEN, RED},
     sbi::shutdown,
@@ -112,7 +110,7 @@ fn test_fail() {
     TEST_MANAGER.test_fail();
 }
 
-/// general purpose test assert functions
+/// General Purpose Test Assertion Functions
 /// - test_assert_eq() -> assert_eq!()
 /// - test_assert() -> assert!()
 /// - test_assert_ne() -> assert_ne!()
@@ -132,12 +130,12 @@ pub fn test_assert_ne<T: PartialEq>(a: T, b: T) {
     test_assert(a != b);
 }
 
-pub fn test_fn<F: FnOnce()>(f: F) {
+pub fn test_fn<F: Fn()>(f: F) {
     let mut stage = TEST_MANAGER.stage.borrow_mut();
     *stage = true;
     drop(stage);
     f();
-    let mut stage = TEST_MANAGER.stage.borrow_mut();
+    let stage = TEST_MANAGER.stage.borrow_mut();
     if *stage {
         success();
     } else {

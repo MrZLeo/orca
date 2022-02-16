@@ -1,9 +1,7 @@
-use crate::console::test_ok;
 use crate::mm::address::VirtAddr;
 use crate::mm::frame_allocator::*;
 use crate::mm::memory_set::KERNEL_SPACE;
 use crate::test::{test_assert, test_assert_eq, test_fn};
-use alloc::vec;
 use alloc::vec::Vec;
 
 const MM_TEST_NUM: usize = 4;
@@ -11,13 +9,7 @@ const MM_TEST_NUM: usize = 4;
 fn heap_test() {
     use alloc::boxed::Box;
     use alloc::vec;
-    use alloc::vec::Vec;
-    extern "C" {
-        fn sbss();
-        fn ebss();
-    }
 
-    let bss_range = sbss as usize..ebss as usize;
     let a = Box::new(5);
     test_assert_eq(*a, 5);
     let b = vec![1, 2, 3];
@@ -27,7 +19,6 @@ fn heap_test() {
 
 fn heap_test2() {
     use alloc::boxed::Box;
-    use alloc::vec::Vec;
     extern "C" {
         fn sbss();
         fn ebss();
@@ -48,18 +39,13 @@ fn heap_test2() {
     drop(v);
 }
 
-extern "C" {
-    fn stext();
-    fn etext();
-    fn srodata();
-    fn erodata();
-    fn sdata();
-    fn edata();
-    fn sbss_with_stack();
-    fn ebss();
-    fn ekernel();
-    fn strampoline();
-}
+// import position of differnet sections
+use crate::config::edata;
+use crate::config::erodata;
+use crate::config::etext;
+use crate::config::sdata;
+use crate::config::srodata;
+use crate::config::stext;
 
 pub fn remap_test() {
     let mut kernel_space = KERNEL_SPACE.borrow_mut();
@@ -91,13 +77,13 @@ pub fn remap_test() {
 }
 pub fn frame_allocator_test() {
     let mut v: Vec<FrameTracker> = Vec::new();
-    for i in 0..5 {
+    for _ in 0..5 {
         let frame = frame_alloc().unwrap();
         println!("{:?}", frame);
         v.push(frame);
     }
     v.clear();
-    for i in 0..5 {
+    for _ in 0..5 {
         let frame = frame_alloc().unwrap();
         println!("{:?}", frame);
         v.push(frame);

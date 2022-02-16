@@ -1,7 +1,5 @@
 use riscv::register::sstatus::{self, Sstatus, SPP};
 
-use super::trap_handler;
-
 #[repr(C)]
 pub struct TrapContext {
     pub x: [usize; 32],
