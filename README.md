@@ -1,4 +1,4 @@
-# Orca 虎鲸
+# Orca 🐋 虎鲸
 
 A RISC-V and unix-like operating system developed just for fun.
 
