@@ -7,6 +7,7 @@
 pub mod console;
 mod heap_allocator;
 mod lang_item;
+pub mod osh;
 mod syscall;
 
 #[no_mangle]
