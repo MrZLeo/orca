@@ -11,6 +11,8 @@ Cargo.lock
 
 # CLion configurations
 .idea/
+# VSCode configurations
+.vscode/
 
 ######################
 # OS generated files #
