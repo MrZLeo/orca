@@ -5,17 +5,41 @@
 
 #![macro_use]
 extern crate alloc;
-use alloc::string::String;
+use alloc::{collections::LinkedList, string::String, sync::Arc};
 
-const LF: u8 = 0x0a;
-const CR: u8 = 0x0d;
-const DL: u8 = 0x7f;
-const BS: u8 = 0x08;
+// use crate::console::BS;
+// use crate::console::CR;
+// use crate::console::DL;
+// use crate::console::LF;
 
 // TODO
 pub enum Command {
     Bin(String),
 }
+
+/// Public Interface of osh
+/// - Produce a `Command` by analyzing a code block
+/// - A code block can be a line of code or more complicated structure like
+/// *`For` loop* or *`if` condition*
 pub fn get_command() -> Option<Command> {
     None
 }
+
+enum Token {
+    Num(i32),
+    Literal(String),
+}
+
+struct PeekInterator<T> {
+    iter: Arc<dyn Iterator<Item = T>>,
+    back: LinkedList<T>,
+}
+
+struct OshLexer {
+    cur_token: Option<Token>,
+    iter: PeekInterator<char>,
+}
+
+impl OshLexer {}
+
+struct OshParser {}

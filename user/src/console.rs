@@ -1,4 +1,7 @@
+#![allow(clippy::print_with_newline)]
+extern crate alloc;
 use crate::{read, write};
+use alloc::string::String;
 use core::fmt::{self, Write};
 
 /// std input & output & error
@@ -57,4 +60,39 @@ pub fn getchar() -> u8 {
     let mut c = [0u8; 1];
     read(STDIN, &mut c);
     c[0]
+}
+
+pub const LF: u8 = 0x0a;
+pub const CR: u8 = 0x0d;
+pub const DL: u8 = 0x7f;
+pub const BS: u8 = 0x08;
+
+fn getline() -> String {
+    let mut line = String::new();
+    loop {
+        let c = getchar();
+        match c {
+            LF | CR => {
+                // get a '\n'
+                print!("\n");
+                if !line.is_empty() {
+                    line.push('\0');
+                    return line;
+                }
+            }
+            BS | DL => {
+                if !line.is_empty() {
+                    // print a ' ' to cover deleted char
+                    print!("{}", BS as char);
+                    print!(" ");
+                    print!("{}", BS as char);
+                    line.pop();
+                }
+            }
+            _ => {
+                print!("{}", c as char);
+                line.push(c as char);
+            }
+        }
+    }
 }

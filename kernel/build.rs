@@ -26,11 +26,13 @@ fn init_app_data() -> Result<()> {
     writeln!(
         file,
         r#"
-    .align 3 # 当前PC地址推进到“2的3次方(8)个字节”对齐的位置
+    .align 3
+# 当前PC地址推进到“2的3次方(8)个字节”对齐的位置
     .section .data
     .global _num_app
 _num_app:
-    .quad {} # 在存储器中分配8个字节，用apps.len()对存储单元进行初始化"#,
+    .quad {}
+# 在存储器中分配8个字节，用apps.len()对存储单元进行初始化"#,
         apps.len()
     )?;
 
@@ -38,6 +40,17 @@ _num_app:
         writeln!(file, r#"    .quad app_{}_start"#, i)?;
     }
     writeln!(file, r#"    .quad app_{}_end"#, apps.len() - 1)?;
+
+    writeln!(
+        file,
+        r#"
+    .global _app_names
+_app_names:"#
+    )?;
+
+    for app in apps.iter() {
+        writeln!(file, r#"    .string "{}""#, app)?;
+    }
 
     for (idx, app) in apps.iter().enumerate() {
         println!("app_{}: {}", idx, app);
