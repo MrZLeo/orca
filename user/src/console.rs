@@ -1,4 +1,3 @@
-#![allow(clippy::print_with_newline)]
 extern crate alloc;
 use crate::{read, write};
 use alloc::string::String;
@@ -33,7 +32,10 @@ macro_rules! print {
 macro_rules! println {
     ($fmt: literal $(, $($arg: tt)+)?) => {
         $crate::console::print(format_args!(concat!($fmt, "\n") $(, $($arg)+)?));
-    }
+    };
+    () => {
+        $crate::console::print(format_args!("\n"));
+    };
 }
 
 pub struct Color(usize);
@@ -67,14 +69,14 @@ pub const CR: u8 = 0x0d;
 pub const DL: u8 = 0x7f;
 pub const BS: u8 = 0x08;
 
-fn getline() -> String {
+pub fn getline() -> String {
     let mut line = String::new();
     loop {
         let c = getchar();
         match c {
             LF | CR => {
                 // get a '\n'
-                print!("\n");
+                println!();
                 if !line.is_empty() {
                     line.push('\0');
                     return line;

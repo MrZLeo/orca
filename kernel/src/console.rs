@@ -31,6 +31,9 @@ macro_rules! println {
             format_args!(concat!($fmt, "\n") $(, $($arg)+)?)
         );
     };
+    () => {
+        $crate::console::print(format_args!("\n"));
+    };
 }
 
 pub struct Color(usize);
