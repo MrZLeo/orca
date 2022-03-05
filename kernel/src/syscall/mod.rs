@@ -24,7 +24,7 @@ pub fn syscall(id: usize, args: [usize; 3]) -> isize {
         SYSCALL_YIELD => sys_yield(),
         SYSCALL_TIME => sys_time(),
         SYSCALL_FORK => sys_fork(),
-        SYSCALL_EXEC => sys_exec(),
+        SYSCALL_EXEC => sys_exec(args[0] as *const u8),
         _ => panic!("Unsupported syscall id:{}", id),
     }
 }

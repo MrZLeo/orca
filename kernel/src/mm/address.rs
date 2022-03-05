@@ -27,25 +27,25 @@ const VPN_WIDTH_SV39: usize = VA_WIDTH_SV39 - PAGE_OFFSET;
 
 impl From<usize> for PhysAddr {
     fn from(v: usize) -> Self {
-        Self({ v & ((1 << PA_WIDTH_SV39) - 1) })
+        Self(v & ((1 << PA_WIDTH_SV39) - 1))
     }
 }
 
 impl From<usize> for PhysPageNum {
     fn from(v: usize) -> Self {
-        Self({ v & ((1 << PPN_WIDTH_SV39) - 1) })
+        Self(v & ((1 << PPN_WIDTH_SV39) - 1))
     }
 }
 
 impl From<usize> for VirtAddr {
     fn from(v: usize) -> Self {
-        Self({ v & ((1 << VA_WIDTH_SV39) - 1) })
+        Self(v & ((1 << VA_WIDTH_SV39) - 1))
     }
 }
 
 impl From<usize> for VirtPageNum {
     fn from(v: usize) -> Self {
-        Self({ v & ((1 << VPN_WIDTH_SV39) - 1) })
+        Self(v & ((1 << VPN_WIDTH_SV39) - 1))
     }
 }
 
@@ -87,6 +87,10 @@ impl PhysAddr {
 
     pub fn ceil(&self) -> PhysPageNum {
         PhysPageNum((self.0 + PAGE_SIZE - 1) / PAGE_SIZE)
+    }
+
+    pub fn as_mut<T>(&mut self) -> &'static mut T {
+        unsafe { (self.0 as *mut T).as_mut().unwrap() }
     }
 }
 

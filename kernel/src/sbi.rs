@@ -31,6 +31,10 @@ pub fn console_putchar(c: usize) {
     sbi_call(SBI_CONSOLE_PUTCHAR, c, 0, 0);
 }
 
+pub fn consolo_getchar() {
+    sbi_call(SBI_CONSOLE_GETCHAR, 0, 0, 0);
+}
+
 pub fn shutdown() -> ! {
     info!("System shutdown");
     sbi_call(SBI_SHUTDOWN, 0, 0, 0);

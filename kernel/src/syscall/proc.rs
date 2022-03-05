@@ -1,3 +1,6 @@
+use crate::loader::app_from_name;
+use crate::mm::page_table;
+use crate::task::processor::{cur_task, cur_user_token};
 use crate::task::{self, processor, scheduler, task::ProcessControlBlock};
 use crate::timer::time_ms;
 
@@ -16,7 +19,6 @@ pub fn sys_time() -> isize {
     time_ms() as isize
 }
 
-// TODO
 pub fn sys_fork() -> isize {
     let cur_task = processor::cur_task().unwrap();
     let child = ProcessControlBlock::fork(&cur_task);
@@ -29,7 +31,14 @@ pub fn sys_fork() -> isize {
     pid.0 as isize
 }
 
-// TODO
-pub fn sys_exec() -> isize {
-    0
+pub fn sys_exec(path: *const u8) -> isize {
+    let token = cur_user_token();
+    let command = page_table::translated_str(token, path);
+    if let Some(data) = app_from_name(command.as_str()) {
+        let task = cur_task().unwrap();
+        task.exec(data);
+        0
+    } else {
+        -1
+    }
 }

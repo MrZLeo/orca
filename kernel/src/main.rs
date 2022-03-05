@@ -1,7 +1,7 @@
 #![no_std]
 #![no_main]
 #![feature(panic_info_message)]
-#![allow(unused)]
+// #![allow(unused)]
 #![feature(alloc_error_handler)]
 
 #[macro_use]
@@ -21,6 +21,8 @@ mod trap;
 
 #[macro_use]
 extern crate bitflags;
+#[macro_use]
+extern crate lazy_static;
 
 // import position of differnet sections
 use crate::config::ebss;
@@ -34,6 +36,7 @@ use crate::config::sdata;
 use crate::config::skernel;
 use crate::config::srodata;
 use crate::config::stext;
+use crate::loader::list_app;
 
 use core::arch::global_asm;
 
@@ -45,23 +48,26 @@ global_asm!(include_str!("link_app.S"));
 #[no_mangle]
 pub fn __main() {
     clear_bss();
-    sys_info();
-    kernel!("Hello World!");
 
+    /* init */
     mm::init();
     trap::init();
     trap::enable_timer_interrupt();
     timer::set_strigger();
+
+    /* show system info */
+    sys_info();
+    kernel!("Hello World!");
+
+    /* enter test module */
     #[cfg(feature = "kernel_test")]
     {
         test::main();
     }
 
-    debug!("syscall test");
-    let t = syscall::sys_time();
-    debug!("t: {}", t);
-
+    /* start schedule process */
     task::start();
+
     panic!("unreachable: __main ended");
 }
 
@@ -86,4 +92,5 @@ fn sys_info() {
         ".bss [{:#x}, {:#x}]",
         sbss_with_stack as usize, ebss as usize
     );
+    list_app();
 }

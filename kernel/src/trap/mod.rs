@@ -1,9 +1,9 @@
 mod context;
 
 use crate::config::{TRAMPOLINE, TRAP_CONTEXT};
-use crate::lang_item::panic;
 use crate::syscall::syscall;
-use crate::task::{cur_exit, cur_suspend, cur_trap_cxt, cur_user_token, run_next};
+use crate::task::processor::cur_trap_cxt;
+use crate::task::suspend_cur_and_run_next;
 use crate::timer::set_strigger;
 pub use context::TrapContext;
 use core::arch::{asm, global_asm};
@@ -31,7 +31,10 @@ pub fn trap_handler() -> ! {
         // syscall interface
         Trap::Exception(Exception::UserEnvCall) => {
             cxt.sepc += 4;
-            cxt.x[10] = syscall(cxt.x[17], [cxt.x[10], cxt.x[11], cxt.x[12]]) as usize;
+            let res = syscall(cxt.x[17], [cxt.x[10], cxt.x[11], cxt.x[12]]) as usize;
+            // current context may be change by `exec`, so we have to get context again
+            cxt = cur_trap_cxt();
+            cxt.x[10] = res as usize;
         }
         Trap::Exception(Exception::StoreFault) | Trap::Exception(Exception::StorePageFault) => {
             error!("[kernel] Fage fault in application, kernel will kill it");
@@ -46,8 +49,7 @@ pub fn trap_handler() -> ! {
         }
         Trap::Interrupt(Interrupt::SupervisorTimer) => {
             set_strigger();
-            cur_suspend();
-            run_next();
+            suspend_cur_and_run_next();
         }
         _ => {
             panic!(

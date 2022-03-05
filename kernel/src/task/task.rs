@@ -152,4 +152,25 @@ impl ProcessControlBlock {
 
         tcb
     }
+
+    pub fn exec(&self, elf_data: &[u8]) {
+        let (memory_set, sp, entry) = MemorySet::from_elf(elf_data);
+        let trap_cxt_ppn = memory_set
+            .translate(VirtAddr::from(TRAP_CONTEXT).into())
+            .unwrap()
+            .ppn();
+
+        let mut inner = self.borrow_mut();
+        inner.memory_set = memory_set;
+        inner.trap_cxt_ppn = trap_cxt_ppn;
+
+        let trap_cxt = inner.trap_cxt();
+        *trap_cxt = TrapContext::app_init_cxt(
+            entry,
+            sp,
+            KERNEL_SPACE.borrow_mut().token(),
+            self.kernel_stack.top(),
+            trap_handler as usize,
+        )
+    }
 }

@@ -1,7 +1,8 @@
-use alloc::vec;
 use alloc::vec::Vec;
+use alloc::{string::String, vec};
 use bitflags::bitflags;
 
+use super::address::PhysAddr;
 use super::{
     address::{PhysPageNum, StepByOne, VirtAddr, VirtPageNum},
     frame_allocator::{frame_alloc, FrameTracker},
@@ -135,6 +136,15 @@ impl PageTable {
     pub fn token(&self) -> usize {
         8usize << 60 | self.root_ppn.0
     }
+
+    pub fn translate_va(&self, va: VirtAddr) -> Option<PhysAddr> {
+        self.find_pte(va.clone().floor()).map(|pte| {
+            let aligned_pa: PhysAddr = pte.ppn().into();
+            let offset = va.offset();
+            let addr = usize::from(aligned_pa) + offset;
+            addr.into()
+        })
+    }
 }
 
 pub fn translated_byte_buffer(token: usize, ptr: *const u8, len: usize) -> Vec<&'static [u8]> {
@@ -153,4 +163,26 @@ pub fn translated_byte_buffer(token: usize, ptr: *const u8, len: usize) -> Vec<&
         start = va_end.into();
     }
     v
+}
+
+pub fn translated_str(token: usize, ptr: *const u8) -> String {
+    let page_table = PageTable::from_token(token);
+    let mut start = ptr as usize;
+    let mut res = String::new();
+    loop {
+        let ch: u8 = *(page_table
+            .translate_va(VirtAddr::from(start))
+            .unwrap()
+            .as_mut());
+
+        // get '\0', the end of string
+        if ch == 0 {
+            break;
+        } else {
+            res.push(ch as char);
+            start += 1;
+        }
+    }
+
+    res
 }
