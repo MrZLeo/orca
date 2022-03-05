@@ -101,6 +101,15 @@ impl MapArea {
 
         page_table.unmap(vpn);
     }
+
+    pub fn from_another(area: &MapArea) -> Self {
+        Self {
+            vpn_range: VPNRange::new(area.vpn_range.start(), area.vpn_range.end()),
+            data_frames: BTreeMap::new(),
+            map_type: area.map_type,
+            map_perm: area.map_perm,
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -319,6 +328,26 @@ impl MemorySet {
 
     pub fn translate(&self, vpn: VirtPageNum) -> Option<PageTableEntry> {
         self.page_table.translate(vpn)
+    }
+
+    // TODO
+    pub fn remove(&mut self, vpn: VirtPageNum) {}
+
+    pub fn from_exited(mmset: &MemorySet) -> Self {
+        let mut memory_set = MemorySet::new();
+        memory_set.map_trampoline();
+
+        mmset.areas.iter().for_each(|area| {
+            let new_area = MapArea::from_another(area);
+            memory_set.push(new_area, None);
+            for vpn in area.vpn_range {
+                let src = mmset.translate(vpn).unwrap().ppn();
+                let des = memory_set.translate(vpn).unwrap().ppn();
+                des.bytes_array().copy_from_slice(src.bytes_array());
+            }
+        });
+
+        memory_set
     }
 }
 
