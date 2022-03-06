@@ -1,7 +1,7 @@
 #![no_std]
 #![no_main]
 #![feature(panic_info_message)]
-// #![allow(unused)]
+#![allow(unused)]
 #![feature(alloc_error_handler)]
 
 #[macro_use]

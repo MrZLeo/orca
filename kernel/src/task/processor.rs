@@ -24,7 +24,7 @@ impl Processor {
     }
 
     pub fn cur(&self) -> Option<Arc<ProcessControlBlock>> {
-        self.cur.as_ref().map(|task| Arc::clone(task))
+        self.cur.as_ref().map(Arc::clone)
     }
 
     pub fn idle_task_cxt_ptr(&mut self) -> *mut TaskContext {

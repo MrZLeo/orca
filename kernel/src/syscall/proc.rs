@@ -63,11 +63,11 @@ pub fn sys_waitpid(pid: isize, exit_code_ptr: *mut i32) -> isize {
             let del_pid = del.getpid();
             let exit_code = del.borrow_mut().exit_code;
             *page_table::translated_refmut(inner.user_token(), exit_code_ptr) = exit_code;
-            return del_pid as isize;
+            del_pid as isize
         } else {
-            return -2;
+            -2
         }
     } else {
-        return -1;
+        -1
     }
 }
