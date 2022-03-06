@@ -1,4 +1,3 @@
-use super::pid::Pid;
 use crate::{
     config::{KERNEL_STACK_SIZE, PAGE_SIZE, TRAMPOLINE},
     mm::{
@@ -7,13 +6,13 @@ use crate::{
     },
 };
 pub struct KernelStack {
-    pid: Pid,
+    pid: usize,
     top: usize,
 }
 
 impl KernelStack {
-    pub fn new(pid: Pid) -> Self {
-        let (bottom, top) = kernel_stack_position(pid.0);
+    pub fn new(pid: usize) -> Self {
+        let (bottom, top) = kernel_stack_position(pid);
         KERNEL_SPACE.borrow_mut().insert_framed_area(
             bottom.into(),
             top.into(),
@@ -41,7 +40,7 @@ impl KernelStack {
 
 impl Drop for KernelStack {
     fn drop(&mut self) {
-        let (bottom, _) = kernel_stack_position(self.pid.0);
+        let (bottom, _) = kernel_stack_position(self.pid);
         let bottom_va: VirtAddr = bottom.into();
         KERNEL_SPACE.borrow_mut().remove(bottom_va.into());
     }

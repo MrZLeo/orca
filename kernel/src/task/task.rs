@@ -80,10 +80,10 @@ impl ProcessControlBlock {
             .ppn();
         let status = TaskStatus::Ready;
         let pid = pid_alloc();
-        let kernel_stack = KernelStack::new(pid);
+        let kernel_stack = KernelStack::new(pid.0);
         let kernel_top = kernel_stack.top();
 
-        let mut tcb = ProcessControlBlock {
+        let tcb = ProcessControlBlock {
             pid,
             kernel_stack,
             inner: UniProcSafeCell::new(ProcessControlBlockInner {
@@ -114,19 +114,19 @@ impl ProcessControlBlock {
         self.inner.borrow_mut()
     }
 
-    pub fn getpid(&self) -> Pid {
-        self.pid
+    pub fn getpid(&self) -> usize {
+        self.pid.0
     }
 
     pub fn fork(parent: &Arc<ProcessControlBlock>) -> Arc<ProcessControlBlock> {
-        let parent_inner = parent.borrow_mut();
+        let mut parent_inner = parent.borrow_mut();
         let memory_set = MemorySet::from_exited(&parent_inner.memory_set);
         let trap_cxt_ppn = memory_set
             .translate(VirtAddr::from(TRAP_CONTEXT).into())
             .unwrap()
             .ppn();
         let pid = pid_alloc();
-        let kernel_stack = KernelStack::new(pid);
+        let kernel_stack = KernelStack::new(pid.0);
         let kernel_stack_top = kernel_stack.top();
 
         let tcb = Arc::new(ProcessControlBlock {

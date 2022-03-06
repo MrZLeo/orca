@@ -330,8 +330,17 @@ impl MemorySet {
         self.page_table.translate(vpn)
     }
 
-    // TODO
-    pub fn remove(&mut self, vpn: VirtPageNum) {}
+    pub fn remove(&mut self, vpn: VirtPageNum) {
+        if let Some((idx, area)) = self
+            .areas
+            .iter_mut()
+            .enumerate()
+            .find(|(idx, a)| a.vpn_range.start() == vpn)
+        {
+            area.unmap(&mut self.page_table);
+            self.areas.remove(idx);
+        }
+    }
 
     pub fn from_exited(mmset: &MemorySet) -> Self {
         let mut memory_set = MemorySet::new();
@@ -348,6 +357,10 @@ impl MemorySet {
         });
 
         memory_set
+    }
+
+    pub fn recycle_pages(&mut self) {
+        self.areas.clear();
     }
 }
 

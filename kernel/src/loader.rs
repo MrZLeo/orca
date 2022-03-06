@@ -1,5 +1,3 @@
-use core::ops::Add;
-
 use alloc::vec::Vec;
 
 use crate::console::{println_with_color, YELLOW};
@@ -59,8 +57,8 @@ pub fn app_from_name(name: &str) -> Option<&'static [u8]> {
     APP_NAMES
         .iter()
         .enumerate()
-        .find(|&(idx, n)| *n == name)
-        .map(|(idx, n)| get_app_data(idx))
+        .find(|&(_idx, n)| *n == name)
+        .map(|(idx, _n)| get_app_data(idx))
 }
 
 pub fn list_app() {

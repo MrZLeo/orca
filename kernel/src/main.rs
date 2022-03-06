@@ -36,7 +36,6 @@ use crate::config::sdata;
 use crate::config::skernel;
 use crate::config::srodata;
 use crate::config::stext;
-use crate::loader::list_app;
 
 use core::arch::global_asm;
 
@@ -51,6 +50,7 @@ pub fn __main() {
 
     /* init */
     mm::init();
+    task::add_initproc();
     trap::init();
     trap::enable_timer_interrupt();
     timer::set_strigger();
@@ -66,7 +66,8 @@ pub fn __main() {
     }
 
     /* start schedule process */
-    task::start();
+    loader::list_app();
+    task::run();
 
     panic!("unreachable: __main ended");
 }
@@ -92,5 +93,4 @@ fn sys_info() {
         ".bss [{:#x}, {:#x}]",
         sbss_with_stack as usize, ebss as usize
     );
-    list_app();
 }

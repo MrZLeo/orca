@@ -5,6 +5,8 @@
 
 #![macro_use]
 extern crate alloc;
+
+use crate::console::getline;
 use alloc::{collections::LinkedList, string::String, sync::Arc};
 
 // use crate::console::BS;
@@ -21,8 +23,10 @@ pub enum Command {
 /// - Produce a `Command` by analyzing a code block
 /// - A code block can be a line of code or more complicated structure like
 /// *`For` loop* or *`if` condition*
+/// TODO: now it is a temporary implementation, just read command
 pub fn get_command() -> Option<Command> {
-    None
+    let str = getline();
+    Some(Command::Bin(str))
 }
 
 enum Token {
@@ -30,14 +34,9 @@ enum Token {
     Literal(String),
 }
 
-struct PeekInterator<T> {
-    iter: Arc<dyn Iterator<Item = T>>,
-    back: LinkedList<T>,
-}
-
 struct OshLexer {
     cur_token: Option<Token>,
-    iter: PeekInterator<char>,
+    // iter: PeekInterator<char>,
 }
 
 impl OshLexer {}

@@ -1,6 +1,6 @@
+use super::__switch;
 use super::scheduler::fetch_task;
 use super::task::TaskStatus;
-use super::{__switch, switch};
 use super::{task::ProcessControlBlock, TaskContext};
 use crate::sync::UniProcSafeCell;
 use crate::trap::TrapContext;
@@ -33,8 +33,7 @@ impl Processor {
 }
 
 lazy_static! {
-    pub static ref PROCESSOR: UniProcSafeCell<Processor> =
-        { UniProcSafeCell::new(Processor::new()) };
+    pub static ref PROCESSOR: UniProcSafeCell<Processor> = UniProcSafeCell::new(Processor::new());
 }
 
 pub fn take_cur_task() -> Option<Arc<ProcessControlBlock>> {
@@ -47,7 +46,8 @@ pub fn cur_task() -> Option<Arc<ProcessControlBlock>> {
 
 pub fn cur_user_token() -> usize {
     let task = cur_task().unwrap();
-    task.borrow_mut().user_token()
+    let x = task.borrow_mut().user_token();
+    x
 }
 
 pub fn cur_trap_cxt() -> &'static mut TrapContext {

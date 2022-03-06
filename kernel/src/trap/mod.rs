@@ -2,8 +2,8 @@ mod context;
 
 use crate::config::{TRAMPOLINE, TRAP_CONTEXT};
 use crate::syscall::syscall;
-use crate::task::processor::cur_trap_cxt;
-use crate::task::suspend_cur_and_run_next;
+use crate::task::processor::{cur_trap_cxt, cur_user_token};
+use crate::task::{exit_cur_and_run_next, suspend_cur_and_run_next};
 use crate::timer::set_strigger;
 pub use context::TrapContext;
 use core::arch::{asm, global_asm};
@@ -22,7 +22,7 @@ pub fn init() {
 #[no_mangle]
 pub fn trap_handler() -> ! {
     set_kernel_trap_entry();
-    let cxt = cur_trap_cxt();
+    let mut cxt = cur_trap_cxt();
     let scause = scause::read();
     let stval = stval::read();
 
@@ -36,17 +36,18 @@ pub fn trap_handler() -> ! {
             cxt = cur_trap_cxt();
             cxt.x[10] = res as usize;
         }
-        Trap::Exception(Exception::StoreFault) | Trap::Exception(Exception::StorePageFault) => {
-            error!("[kernel] Fage fault in application, kernel will kill it");
-            cur_exit();
-            run_next();
-        }
-        Trap::Exception(Exception::IllegalInstruction)
+        Trap::Exception(Exception::StoreFault)
+        | Trap::Exception(Exception::StorePageFault)
+        | Trap::Exception(Exception::LoadFault)
+        | Trap::Exception(Exception::LoadPageFault)
         | Trap::Exception(Exception::InstructionFault) => {
-            error!("[kernel] Illegal Instruction in application, kernel will kill it");
-            cur_exit();
-            run_next();
+            exit_cur_and_run_next(-2);
         }
+        Trap::Exception(Exception::IllegalInstruction) => {
+            error!("[kernel] Illegal Instruction in application, kernel will kill it");
+            exit_cur_and_run_next(-3);
+        }
+
         Trap::Interrupt(Interrupt::SupervisorTimer) => {
             set_strigger();
             suspend_cur_and_run_next();
