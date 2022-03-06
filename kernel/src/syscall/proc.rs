@@ -1,5 +1,7 @@
+use alloc::format;
 use alloc::sync::Arc;
 
+use crate::console::{println_with_color, YELLOW};
 use crate::loader::app_from_name;
 use crate::mm::page_table;
 use crate::task::exit_cur_and_run_next;
@@ -8,7 +10,10 @@ use crate::task::{self, processor, scheduler, task::ProcessControlBlock};
 use crate::timer::time_ms;
 
 pub fn sys_exit(exit_code: i32) -> ! {
-    warn!("Application exitd with code {}", exit_code);
+    println_with_color(
+        format!("Process exited with code {}", exit_code).as_str(),
+        YELLOW,
+    );
     exit_cur_and_run_next(exit_code);
     panic!("Unreachable: app exited");
 }

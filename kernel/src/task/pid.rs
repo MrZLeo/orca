@@ -32,7 +32,7 @@ impl PidAllocator {
 
         // avoid double free
         assert!(
-            self.recycled.iter().any(|&x| x == pid),
+            !self.recycled.iter().any(|&x| x == pid),
             "pid has been dealloc"
         );
 
