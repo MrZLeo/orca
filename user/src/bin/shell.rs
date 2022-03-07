@@ -28,13 +28,13 @@ fn main() -> i32 {
                         if exec(bin.as_str()) == -1 {
                             println!("Error when executing...");
                             return -4;
-                        } else {
-                            // father process
-                            let mut exit_code = 0;
-                            let exit_pid = waitpid(pid as usize, &mut exit_code);
-                            assert_eq!(exit_pid, pid);
-                            println!("Shell: Process {} exit with code {}", pid, exit_code);
                         }
+                    } else {
+                        // father process
+                        let mut exit_code = 0;
+                        let exit_pid = waitpid(pid as usize, &mut exit_code);
+                        assert_eq!(exit_pid, pid);
+                        println!("Shell: Process {} exit with code {}", pid, exit_code);
                     }
                 }
             }
