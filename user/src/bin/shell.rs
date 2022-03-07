@@ -11,11 +11,13 @@
 extern crate user_lib;
 extern crate alloc;
 
+use user_lib::console::{println_with_color, BLUE};
 use user_lib::osh::Command;
 use user_lib::{exec, fork, osh, waitpid};
 
 #[no_mangle]
 fn main() -> i32 {
+    println_with_color("$> Use Shift-Ctrl-a + x to exit orca.", BLUE);
     loop {
         print!("$ ");
         let command = osh::get_command();

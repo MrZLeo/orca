@@ -119,7 +119,7 @@ impl ProcessControlBlock {
 
     pub fn fork(parent: &Arc<ProcessControlBlock>) -> Arc<ProcessControlBlock> {
         let mut parent_inner = parent.borrow_mut();
-        let memory_set = MemorySet::from_exited(&parent_inner.memory_set);
+        let memory_set = parent_inner.memory_set.clone();
         let trap_cxt_ppn = memory_set
             .translate(VirtAddr::from(TRAP_CONTEXT).into())
             .unwrap()

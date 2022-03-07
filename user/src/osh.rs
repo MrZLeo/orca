@@ -7,7 +7,23 @@
 extern crate alloc;
 
 use crate::console::getline;
-use alloc::{collections::LinkedList, string::String, sync::Arc};
+use alloc::string::String;
+
+// FIXME: should be generate automatically
+static BUILTIN_BIN: &[&str] = &[
+    "exit\0",
+    "fantastic_text\0",
+    "forktest\0",
+    "forktest2\0",
+    "forktest_simple\0",
+    "hello_world\0",
+    "matrix\0",
+    "sleep\0",
+    "sleep_simple\0",
+    "stack_overflow\0",
+    "yield\0",
+    "usertests\0",
+];
 
 // use crate::console::BS;
 // use crate::console::CR;
@@ -26,7 +42,12 @@ pub enum Command {
 /// TODO: now it is a temporary implementation, just read command
 pub fn get_command() -> Option<Command> {
     let str = getline();
-    Some(Command::Bin(str))
+    if BUILTIN_BIN.iter().any(|&bin| *bin == str) {
+        Some(Command::Bin(str))
+    } else {
+        print!("{str}: ");
+        None
+    }
 }
 
 enum Token {

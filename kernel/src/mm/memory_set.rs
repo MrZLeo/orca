@@ -101,13 +101,15 @@ impl MapArea {
 
         page_table.unmap(vpn);
     }
+}
 
-    pub fn from_another(area: &MapArea) -> Self {
+impl Clone for MapArea {
+    fn clone(&self) -> Self {
         Self {
-            vpn_range: VPNRange::new(area.vpn_range.start(), area.vpn_range.end()),
+            vpn_range: VPNRange::new(self.vpn_range.start(), self.vpn_range.end()),
             data_frames: BTreeMap::new(),
-            map_type: area.map_type,
-            map_perm: area.map_perm,
+            map_type: self.map_type,
+            map_perm: self.map_perm,
         }
     }
 }
@@ -342,25 +344,28 @@ impl MemorySet {
         }
     }
 
-    pub fn from_exited(mmset: &MemorySet) -> Self {
+    pub fn recycle_pages(&mut self) {
+        self.areas.clear();
+    }
+}
+
+impl Clone for MemorySet {
+    fn clone(&self) -> Self {
         let mut memory_set = MemorySet::new();
         memory_set.map_trampoline();
 
-        mmset.areas.iter().for_each(|area| {
-            let new_area = MapArea::from_another(area);
+        self.areas.iter().for_each(|area| {
+            // let new_area = MapArea::from_another(area);
+            let new_area = area.clone();
             memory_set.push(new_area, None);
             for vpn in area.vpn_range {
-                let src = mmset.translate(vpn).unwrap().ppn();
+                let src = self.translate(vpn).unwrap().ppn();
                 let des = memory_set.translate(vpn).unwrap().ppn();
                 des.bytes_array().copy_from_slice(src.bytes_array());
             }
         });
 
         memory_set
-    }
-
-    pub fn recycle_pages(&mut self) {
-        self.areas.clear();
     }
 }
 
