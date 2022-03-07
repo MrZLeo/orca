@@ -114,7 +114,7 @@ and compile it with kernel, and shell will provide it as built-in binary.
 git checkout a183e1e39552d056dd78b81724b4ebf496235896
 ```
 
-![shell-support](https://raw.githubusercontent.com/MrZLeo/Image/main/uPic/2022/03/07/shell-supportpSHnoc.gif)
+![shell-support](https://raw.githubusercontent.com/MrZLeo/Image/main/uPic/2022/03/07/shell-supportkpzugR.gif)
 
 ## References
 
