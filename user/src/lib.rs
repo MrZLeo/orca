@@ -3,6 +3,8 @@
 #![feature(panic_info_message)]
 #![feature(alloc_error_handler)]
 
+extern crate alloc;
+
 #[macro_use]
 pub mod console;
 mod heap_allocator;
@@ -34,6 +36,7 @@ fn clear_bss() {
     (sbss as usize..ebss as usize).for_each(|x| unsafe { (x as *mut u8).write_volatile(0) });
 }
 
+use alloc::string::String;
 /// syscall for user
 use syscall::*;
 
@@ -93,4 +96,8 @@ pub fn sleep(time_ms: usize) {
     while time() < start + time_ms as isize {
         sys_yield();
     }
+}
+
+pub fn readline() -> String {
+    console::getline()
 }

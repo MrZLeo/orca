@@ -23,6 +23,7 @@ static BUILTIN_BIN: &[&str] = &[
     "stack_overflow\0",
     "yield\0",
     "usertests\0",
+    "echo\0",
 ];
 
 // use crate::console::BS;

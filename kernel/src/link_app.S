@@ -4,7 +4,7 @@
     .section .data
     .global _num_app
 _num_app:
-    .quad 15
+    .quad 16
 # 在存储器中分配8个字节，用apps.len()对存储单元进行初始化
     .quad app_0_start
     .quad app_1_start
@@ -21,10 +21,12 @@ _num_app:
     .quad app_12_start
     .quad app_13_start
     .quad app_14_start
-    .quad app_14_end
+    .quad app_15_start
+    .quad app_15_end
 
     .global _app_names
 _app_names:
+    .string "echo"
     .string "exit"
     .string "fantastic_text"
     .string "forktest"
@@ -46,7 +48,7 @@ _app_names:
     .global app_0_end
     .align 3
 app_0_start:
-    .incbin "../user/target/riscv64gc-unknown-none-elf/release/exit"
+    .incbin "../user/target/riscv64gc-unknown-none-elf/release/echo"
 app_0_end:
 
     .section .data
@@ -54,7 +56,7 @@ app_0_end:
     .global app_1_end
     .align 3
 app_1_start:
-    .incbin "../user/target/riscv64gc-unknown-none-elf/release/fantastic_text"
+    .incbin "../user/target/riscv64gc-unknown-none-elf/release/exit"
 app_1_end:
 
     .section .data
@@ -62,7 +64,7 @@ app_1_end:
     .global app_2_end
     .align 3
 app_2_start:
-    .incbin "../user/target/riscv64gc-unknown-none-elf/release/forktest"
+    .incbin "../user/target/riscv64gc-unknown-none-elf/release/fantastic_text"
 app_2_end:
 
     .section .data
@@ -70,7 +72,7 @@ app_2_end:
     .global app_3_end
     .align 3
 app_3_start:
-    .incbin "../user/target/riscv64gc-unknown-none-elf/release/forktest2"
+    .incbin "../user/target/riscv64gc-unknown-none-elf/release/forktest"
 app_3_end:
 
     .section .data
@@ -78,7 +80,7 @@ app_3_end:
     .global app_4_end
     .align 3
 app_4_start:
-    .incbin "../user/target/riscv64gc-unknown-none-elf/release/forktest_simple"
+    .incbin "../user/target/riscv64gc-unknown-none-elf/release/forktest2"
 app_4_end:
 
     .section .data
@@ -86,7 +88,7 @@ app_4_end:
     .global app_5_end
     .align 3
 app_5_start:
-    .incbin "../user/target/riscv64gc-unknown-none-elf/release/forktree"
+    .incbin "../user/target/riscv64gc-unknown-none-elf/release/forktest_simple"
 app_5_end:
 
     .section .data
@@ -94,7 +96,7 @@ app_5_end:
     .global app_6_end
     .align 3
 app_6_start:
-    .incbin "../user/target/riscv64gc-unknown-none-elf/release/hello_world"
+    .incbin "../user/target/riscv64gc-unknown-none-elf/release/forktree"
 app_6_end:
 
     .section .data
@@ -102,7 +104,7 @@ app_6_end:
     .global app_7_end
     .align 3
 app_7_start:
-    .incbin "../user/target/riscv64gc-unknown-none-elf/release/initproc"
+    .incbin "../user/target/riscv64gc-unknown-none-elf/release/hello_world"
 app_7_end:
 
     .section .data
@@ -110,7 +112,7 @@ app_7_end:
     .global app_8_end
     .align 3
 app_8_start:
-    .incbin "../user/target/riscv64gc-unknown-none-elf/release/matrix"
+    .incbin "../user/target/riscv64gc-unknown-none-elf/release/initproc"
 app_8_end:
 
     .section .data
@@ -118,7 +120,7 @@ app_8_end:
     .global app_9_end
     .align 3
 app_9_start:
-    .incbin "../user/target/riscv64gc-unknown-none-elf/release/shell"
+    .incbin "../user/target/riscv64gc-unknown-none-elf/release/matrix"
 app_9_end:
 
     .section .data
@@ -126,7 +128,7 @@ app_9_end:
     .global app_10_end
     .align 3
 app_10_start:
-    .incbin "../user/target/riscv64gc-unknown-none-elf/release/sleep"
+    .incbin "../user/target/riscv64gc-unknown-none-elf/release/shell"
 app_10_end:
 
     .section .data
@@ -134,7 +136,7 @@ app_10_end:
     .global app_11_end
     .align 3
 app_11_start:
-    .incbin "../user/target/riscv64gc-unknown-none-elf/release/sleep_simple"
+    .incbin "../user/target/riscv64gc-unknown-none-elf/release/sleep"
 app_11_end:
 
     .section .data
@@ -142,7 +144,7 @@ app_11_end:
     .global app_12_end
     .align 3
 app_12_start:
-    .incbin "../user/target/riscv64gc-unknown-none-elf/release/stack_overflow"
+    .incbin "../user/target/riscv64gc-unknown-none-elf/release/sleep_simple"
 app_12_end:
 
     .section .data
@@ -150,7 +152,7 @@ app_12_end:
     .global app_13_end
     .align 3
 app_13_start:
-    .incbin "../user/target/riscv64gc-unknown-none-elf/release/usertests"
+    .incbin "../user/target/riscv64gc-unknown-none-elf/release/stack_overflow"
 app_13_end:
 
     .section .data
@@ -158,5 +160,13 @@ app_13_end:
     .global app_14_end
     .align 3
 app_14_start:
-    .incbin "../user/target/riscv64gc-unknown-none-elf/release/yield"
+    .incbin "../user/target/riscv64gc-unknown-none-elf/release/usertests"
 app_14_end:
+
+    .section .data
+    .global app_15_start
+    .global app_15_end
+    .align 3
+app_15_start:
+    .incbin "../user/target/riscv64gc-unknown-none-elf/release/yield"
+app_15_end:

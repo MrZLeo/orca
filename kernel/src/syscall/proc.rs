@@ -81,3 +81,8 @@ pub fn sys_getpid() -> isize {
     let a = cur_task().unwrap();
     a.pid.0 as isize
 }
+
+pub fn sys_spawn(path: *const u8) -> isize {
+    // TODO
+    0
+}

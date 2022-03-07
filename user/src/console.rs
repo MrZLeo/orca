@@ -1,4 +1,3 @@
-extern crate alloc;
 use crate::{read, write};
 use alloc::string::String;
 use core::fmt::{self, Write};

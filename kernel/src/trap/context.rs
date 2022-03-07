@@ -25,6 +25,7 @@ impl TrapContext {
         let mut sstatus = sstatus::read();
         sstatus.set_spp(SPP::User);
         let mut ctx = Self {
+            // TODO & FIXME: commandline arguments
             x: [0; 32],
             sstatus,
             sepc: entry,
