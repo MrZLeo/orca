@@ -11,7 +11,7 @@ use crate::timer::time_ms;
 
 pub fn sys_exit(exit_code: i32) -> ! {
     println_with_color(
-        format!("Process exited with code {}", exit_code).as_str(),
+        format!("[kernel]Process exited with code {}", exit_code).as_str(),
         YELLOW,
     );
     exit_cur_and_run_next(exit_code);
@@ -75,4 +75,9 @@ pub fn sys_waitpid(pid: isize, exit_code_ptr: *mut i32) -> isize {
     } else {
         -1
     }
+}
+
+pub fn sys_getpid() -> isize {
+    let a = cur_task().unwrap();
+    a.pid.0 as isize
 }

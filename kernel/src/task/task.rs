@@ -70,7 +70,6 @@ impl ProcessControlBlockInner {
     }
 }
 
-// FIXME: implementation of PCB
 impl ProcessControlBlock {
     pub fn new(elf_data: &[u8]) -> Self {
         let (memory_set, user_sp, entry_point) = MemorySet::from_elf(elf_data);
