@@ -114,7 +114,10 @@ and compile it with kernel, and shell will provide it as built-in binary.
 git checkout a183e1e39552d056dd78b81724b4ebf496235896
 ```
 
+![shell-support](https://raw.githubusercontent.com/MrZLeo/Image/main/uPic/2022/03/07/shell-supportpSHnoc.gif)
+
 ## References
+
 1. xv6-riscv: an elegant educational os https://github.com/mit-pdos/xv6-riscv
 2. rcore: an educational os developed by rust https://github.com/rcore-os/rCore
 3. rcore-tutorial-v3: https://github.com/rcore-os/rCore-Tutorial-v3/tree/ch2-dev/os/src
