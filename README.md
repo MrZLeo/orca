@@ -106,6 +106,14 @@ Until now, these works is still transparent outside the OS.
 git checkout 504f206d1b891182c8de5599506df2e10e5f8232
 ```
 
+### 2022-3-7 Process Management and Shell Support
+Orca release new version to support process and typical shell interaction mode. Now we can program useful command
+and compile it with kernel, and shell will provide it as built-in binary.
+
+```
+git checkout a183e1e39552d056dd78b81724b4ebf496235896
+```
+
 ## References
 1. xv6-riscv: an elegant educational os https://github.com/mit-pdos/xv6-riscv
 2. rcore: an educational os developed by rust https://github.com/rcore-os/rCore
