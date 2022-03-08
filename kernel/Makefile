@@ -21,6 +21,7 @@ BASE_ADDR := 0x80200000
 QEMU = qemu-system-riscv64
 QEMUOPTS = -machine virt \
 		   -nographic \
+		   -m 128M \
 		   -bios $(BOOTLOADER_DIR)/$(BOOTLOADER_BIN) \
 		   -device loader,file=$(RELEASE_DIR)/$(OS_BIN),addr=$(BASE_ADDR)
 
