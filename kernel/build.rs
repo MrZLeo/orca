@@ -72,5 +72,6 @@ app_{0}_end:"#,
 }
 
 fn main() {
+    println!("Building application...");
     init_app_data().unwrap();
 }

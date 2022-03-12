@@ -54,6 +54,7 @@ lazy_static! {
 }
 
 pub fn app_from_name(name: &str) -> Option<&'static [u8]> {
+    debug!("stop point2");
     APP_NAMES
         .iter()
         .enumerate()

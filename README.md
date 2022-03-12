@@ -116,6 +116,12 @@ git checkout a183e1e39552d056dd78b81724b4ebf496235896
 
 ![shell-support](https://raw.githubusercontent.com/MrZLeo/Image/main/uPic/2022/03/07/shell-supportkpzugR.gif)
 
+### 2022-3 Way to Persistent Storage
+We will develop a file system that allow us to store of os.
+This file system should be easy to develop and powerful enought right now.
+And it will use extern crate like `lru` and `spin` to achieve efficiency.
+
+
 ## References
 
 1. xv6-riscv: an elegant educational os https://github.com/mit-pdos/xv6-riscv

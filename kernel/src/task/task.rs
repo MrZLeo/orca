@@ -72,7 +72,10 @@ impl ProcessControlBlockInner {
 
 impl ProcessControlBlock {
     pub fn new(elf_data: &[u8]) -> Self {
+        debug!("stop point 1");
+        // FIXME: Mac OS qemu will crash here
         let (memory_set, user_sp, entry_point) = MemorySet::from_elf(elf_data);
+        // green
         let trap_cxt_ppn = memory_set
             .translate(VirtAddr::from(TRAP_CONTEXT).into())
             .unwrap()
