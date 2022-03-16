@@ -52,14 +52,14 @@ git checkout c1ba7a0b2f0829ebe878a0eff856f1a51b21b901
 Batch os that can run different user applications one by one(limited syscall supported)
 
 ```
-git checkout 31b4a9b396336b94defb9404091122933b5bcd75
+git checkout v0.1
 ```
 
 ### 2022-2-7
 OS that allows time slice and change differnet task to run
 
 ```
-git checkout 94118420a1f709e71bd7f2c355dd73f1601ab63b
+git checkout v0.2
 ```
 
 ### 2022-2-8 Test Architecture for orca
@@ -88,7 +88,7 @@ pub fn mm_test() {
 6. import my module in `mod.rs`, call the interface `mm_test`
 
 ```
-git checkout a4eceef4b0f8f95f8b231bf47a6298e55813939e
+git checkout v0.2.1
 ```
 
 
@@ -103,7 +103,7 @@ Until now, these works is still transparent outside the OS.
 - **posix interface**(next version!)
 
 ```
-git checkout 504f206d1b891182c8de5599506df2e10e5f8232
+git checkout v0.3
 ```
 
 ### 2022-3-7 Process Management and Shell Support
@@ -111,7 +111,7 @@ Orca release new version to support process and typical shell interaction mode. 
 and compile it with kernel, and shell will provide it as built-in binary.
 
 ```
-git checkout a183e1e39552d056dd78b81724b4ebf496235896
+git checkout v0.4
 ```
 
 ![shell-support](https://raw.githubusercontent.com/MrZLeo/Image/main/uPic/2022/03/07/shell-supportkpzugR.gif)
