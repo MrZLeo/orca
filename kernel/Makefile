@@ -78,7 +78,7 @@ gdb:
 
 env:
 	@echo "### Check target"
-	@(rustup target list | grep "$(TARGET) (installed)") || @rustup target add $(TARGET)
+	@(rustup target list | grep "$(TARGET) (installed)") || rustup target add $(TARGET)
 	@echo "### Check cargo-binutils"
 	@cargo install cargo-binutils
 	@echo "### Check rust-src"
