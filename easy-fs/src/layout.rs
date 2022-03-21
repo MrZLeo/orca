@@ -1,5 +1,3 @@
-use std::os::unix::prelude::OsStrExt;
-
 use crate::{block_cache::get_block_cache, block_dev::BlockDevice, BLOCK_SIZE};
 use alloc::sync::Arc;
 
@@ -140,7 +138,6 @@ impl DiskInode {
         new_blocks: Vec<u32>,
         block_dev: &Arc<dyn BlockDevice>,
     ) {
-        todo!()
     }
 
     /// @return `Vec<u32>`: the blocks that this file used
@@ -188,7 +185,12 @@ impl DiskInode {
         read_sz
     }
 
-    pub fn write_at() {
+    pub fn write_at(
+        &mut self,
+        offset: usize,
+        buf: &[u8],
+        block_device: &Arc<dyn BlockDevice>,
+    ) -> usize {
         todo!()
     }
 }
