@@ -2,7 +2,7 @@ use alloc::sync::Arc;
 use spin::Mutex;
 
 use crate::{
-    block_cache::get_block_cache,
+    block_cache::{block_cache_sync_all, get_block_cache},
     block_dev::BlockDevice,
     efs::EasyFileSystem,
     layout::{DirEntry, DiskInode, DiskInodeType, DIR_ENTRY_SIZE},
@@ -146,11 +146,9 @@ impl Inode {
     pub fn clear(&self) {
         let fs = self.fs.lock();
         self.modify(|disk_inode| {
+            let size = DiskInode::total_blocks(disk_inode);
             let data_block_dealloc = disk_inode.clear(&self.block_dev);
-            assert_eq!(
-                data_block_dealloc.len(),
-                DiskInode::total_blocks(disk_inode) as usize
-            );
+            assert_eq!(data_block_dealloc.len(), size as usize);
             for data_block in data_block_dealloc {
                 fs.dealloc_data(data_block)
             }
@@ -164,10 +162,12 @@ impl Inode {
 
     pub fn write_at(&self, offset: usize, buf: &[u8]) -> usize {
         let mut fs = self.fs.lock();
-        self.modify(|disk_inode| {
+        let size = self.modify(|disk_inode| {
             self.increase_size((offset + buf.len()) as u32, disk_inode, &mut fs);
             disk_inode.write_at(offset, buf, &self.block_dev)
-        })
+        });
+        block_cache_sync_all();
+        size
     }
 
     fn increase_size(&self, new_size: u32, disk_inode: &mut DiskInode, fs: &mut EasyFileSystem) {

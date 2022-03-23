@@ -27,7 +27,7 @@ impl Bitmap {
                     if let Some((bits64_pos, inner_pos)) = bitmap_block
                         .iter()
                         .enumerate()
-                        .find(|&(_, bits64)| *bits64 != u64::MAX) // find a double word that contains at least one 0
+                        .find(|(_, bits64)| **bits64 != u64::MAX) // find a double word that contains at least one 0
                         .map(|(bits64_pos, bits64)| (bits64_pos, bits64.trailing_ones() as usize))
                     {
                         bitmap_block[bits64_pos] |= 1u64 << inner_pos;
@@ -56,7 +56,7 @@ impl Bitmap {
             .lock()
             .modify(0, |bitmap_block: &mut BitmapBlock| {
                 assert!(
-                    bitmap_block[bits64_pos] & (1u64 << inner_pos) == 1,
+                    bitmap_block[bits64_pos] & (1u64 << inner_pos) > 0,
                     "bitmap must be alloced before dealloc"
                 );
                 bitmap_block[bits64_pos] &= !(1u64 << inner_pos);

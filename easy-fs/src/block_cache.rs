@@ -1,9 +1,8 @@
 use crate::block_dev::BlockDevice;
 use crate::BLOCK_SIZE;
 use alloc::sync::Arc;
-use spin::Mutex;
-
 use lru::LruCache;
+use spin::Mutex;
 
 pub struct BlockCache {
     cache: [u8; BLOCK_SIZE],
@@ -25,7 +24,7 @@ impl BlockCache {
     }
 
     fn addr_of_offset(&self, offset: usize) -> usize {
-        &self.cache[offset as usize] as *const _ as usize
+        &self.cache[offset] as *const _ as usize
     }
 
     pub fn as_ref<T>(&self, offset: usize) -> &T
@@ -35,7 +34,7 @@ impl BlockCache {
         let type_size = core::mem::size_of::<T>();
         assert!(type_size + offset <= BLOCK_SIZE);
         let addr = self.addr_of_offset(offset);
-        unsafe { &(*(addr as *const T)) }
+        unsafe { &*(addr as *const T) }
     }
 
     pub fn as_mut<T>(&mut self, offset: usize) -> &mut T
@@ -44,8 +43,8 @@ impl BlockCache {
     {
         let type_size = core::mem::size_of::<T>();
         assert!(type_size + offset <= BLOCK_SIZE);
-        let addr = self.addr_of_offset(offset);
         self.modified = true;
+        let addr = self.addr_of_offset(offset);
         unsafe { &mut *(addr as *mut T) }
     }
 
@@ -111,4 +110,14 @@ lazy_static! {
 
 pub fn get_block_cache(block_id: usize, block_dev: Arc<dyn BlockDevice>) -> Arc<Mutex<BlockCache>> {
     BLOCK_CACHE_MANAGER.lock().get(block_id, block_dev)
+}
+
+pub fn block_cache_sync_all() {
+    let manager = BLOCK_CACHE_MANAGER.lock();
+    // for (_, cache) in manager.queue.iter() {
+    //     cache.lock().sync();
+    // }
+    for (_, cache) in manager.cache.iter() {
+        cache.lock().sync();
+    }
 }

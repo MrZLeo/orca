@@ -79,25 +79,26 @@ impl DiskInode {
 
     pub fn get_block_id(&self, inner_id: u32, block_dev: &Arc<dyn BlockDevice>) -> u32 {
         let inner_id = inner_id as usize;
-        if inner_id <= INODE_DIRECT_NUM {
+        if inner_id < INODE_DIRECT_NUM {
             self.direct[inner_id]
-        } else if inner_id <= INDIRECT1_BOUND {
+        } else if inner_id < INDIRECT1_BOUND {
             get_block_cache(self.indirect1 as usize, Arc::clone(block_dev))
                 .lock()
                 .read(0, |indirect_block: &IndirectBlock| {
                     indirect_block[inner_id - INODE_DIRECT_NUM]
                 })
         } else {
+            let last = inner_id - INDIRECT1_BOUND;
             let indirect1 = get_block_cache(self.indirect2 as usize, Arc::clone(block_dev))
                 .lock()
-                .read(0, |indirect_block: &IndirectBlock| {
-                    indirect_block[(inner_id - INDIRECT1_BOUND) / INODE_INDIRECT1_NUM]
+                .read(0, |indirect2: &IndirectBlock| {
+                    indirect2[last / INODE_INDIRECT1_NUM]
                 });
 
             get_block_cache(indirect1 as usize, Arc::clone(block_dev))
                 .lock()
-                .read(0, |indirect_block: &IndirectBlock| {
-                    indirect_block[(inner_id - INDIRECT1_BOUND) % INODE_INDIRECT1_NUM]
+                .read(0, |indirect1: &IndirectBlock| {
+                    indirect1[last % INODE_INDIRECT1_NUM]
                 })
         }
     }
@@ -114,7 +115,7 @@ impl DiskInode {
         let data = Self::__data_blocks(size);
         if data <= INODE_DIRECT_NUM as u32 {
             data
-        } else if data <= INODE_INDIRECT1_NUM as u32 {
+        } else if data <= INDIRECT1_BOUND as u32 {
             data + 1
         } else {
             data + 2
@@ -145,7 +146,7 @@ impl DiskInode {
         let mut new_blcoks_iter = new_blocks.into_iter();
 
         // fill direct if there has space
-        while total_bk < INODE_DIRECT_NUM.min(total_bk as usize) as u32 {
+        while cur_bk < total_bk.min(INODE_DIRECT_NUM as u32) {
             self.direct[cur_bk as usize] = new_blcoks_iter.next().unwrap();
             cur_bk += 1;
         }
@@ -304,7 +305,7 @@ impl DiskInode {
     ) -> usize {
         let mut start = offset;
         let end = (offset + buf.len()).min(self.size as usize);
-        if start > end {
+        if start >= end {
             return 0;
         }
 
@@ -312,10 +313,12 @@ impl DiskInode {
         let mut read_sz = 0usize;
 
         loop {
-            let mut cur_block_end = (start_bk / BLOCK_SIZE + 1) * BLOCK_SIZE;
+            let mut cur_block_end = (start / BLOCK_SIZE + 1) * BLOCK_SIZE;
             cur_block_end = cur_block_end.min(end);
             let inner_read_size = cur_block_end - start;
+
             let dst = &mut buf[read_sz..read_sz + inner_read_size];
+
             get_block_cache(
                 self.get_block_id(start_bk as u32, block_dev) as usize,
                 Arc::clone(block_dev),
@@ -364,8 +367,7 @@ impl DiskInode {
             .lock()
             .modify(0, |data_block: &mut DataBlock| {
                 let src = &buf[write_size..write_size + cur_write_size];
-                let dst =
-                    &mut data_block[start % BLOCK_SIZE..start_bk % BLOCK_SIZE + cur_write_size];
+                let dst = &mut data_block[start % BLOCK_SIZE..start % BLOCK_SIZE + cur_write_size];
                 dst.copy_from_slice(src);
             });
 

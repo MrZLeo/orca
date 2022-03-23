@@ -52,7 +52,7 @@ impl EasyFileSystem {
         }
 
         // init super block
-        get_block_cache(1, Arc::clone(&block_dev))
+        get_block_cache(0, Arc::clone(&block_dev))
             .lock()
             .modify(0, |block: &mut SuperBlock| {
                 block.init(
@@ -66,7 +66,7 @@ impl EasyFileSystem {
             });
 
         // init root "/"
-        assert_eq!(efs.alloc_inode(), 0);
+        assert_eq!(efs.alloc_inode(), 0, "first inode must be 0");
         let (root_inode_block, root_inode_offset) = efs.get_disk_inode_pos(0);
         get_block_cache(root_inode_block as usize, Arc::clone(&block_dev))
             .lock()
@@ -138,9 +138,7 @@ impl EasyFileSystem {
             .modify(0, |block: &mut DataBlock| {
                 block.iter_mut().for_each(|x| *x = 0)
             });
-        self.data_bitmap.dealloc(
-            &Arc::clone(&self.block_dev),
-            (block_id - self.data_start_block) as usize,
-        )
+        self.data_bitmap
+            .dealloc(&self.block_dev, (block_id - self.data_start_block) as usize)
     }
 }
