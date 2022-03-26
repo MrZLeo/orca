@@ -7,6 +7,7 @@
 #[macro_use]
 mod console;
 mod config;
+mod fs;
 mod lang_item;
 mod loader;
 mod mm;
