@@ -11,6 +11,11 @@ This OS have some features:
 
 In order to set enviroment correctly, you should pay attention to your toolchains carefully.
 
+### QEMU version
+We support the new version of qemu due to the rustsbi-qemu. We do the test in `qemu 6.2.50`, it would be better to use qemu version not older than this. Because many linux or macOS provide old qemu version like `2.x`, I strongly recommand you compile qemu by your self.
+
+[More infomation about qemu.](https://www.qemu.org/download/#source)
+
 ### Rust toolchains
 
 - rustc nightly(I will keep following the newest rustc version, until 2022-2-14, it is vers 1.60)
