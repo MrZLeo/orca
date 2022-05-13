@@ -7,6 +7,7 @@
 #[macro_use]
 mod console;
 mod config;
+mod drivers;
 mod fs;
 mod lang_item;
 mod loader;

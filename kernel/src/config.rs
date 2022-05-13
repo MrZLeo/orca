@@ -31,3 +31,7 @@ extern "C" {
     pub fn ebss();
     pub fn strampoline();
 }
+
+// MMIO for qemu
+// (start addr, length)
+pub const MMIO: &[(usize, usize)] = &[(0x1001000, 0x1000)];

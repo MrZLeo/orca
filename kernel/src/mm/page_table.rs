@@ -197,3 +197,21 @@ pub fn translated_refmut<T>(token: usize, ptr: *const T) -> &'static mut T {
 
     page_table.translate_va(va.into()).unwrap().as_mut()
 }
+
+pub struct UserBuf {
+    pub buffers: Vec<&'static mut [u8]>,
+}
+
+impl UserBuf {
+    pub fn new(buffers: Vec<&'static mut [u8]>) -> Self {
+        Self { buffers }
+    }
+
+    pub fn len(&self) -> usize {
+        let mut total = 0;
+        for buf in self.buffers.iter() {
+            total += buf.len();
+        }
+        total
+    }
+}

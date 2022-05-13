@@ -18,12 +18,17 @@ BOOTLOADER_BIN := rustsbi-qemu.bin
 
 BASE_ADDR := 0x80200000
 
+FS_IMG := ../user/target/$(RELEASE_DIR)/fs.img
+
 QEMU = qemu-system-riscv64
 QEMUOPTS = -machine virt \
 		   -nographic \
 		   -m 128M \
 		   -bios $(BOOTLOADER_DIR)/$(BOOTLOADER_BIN) \
-		   -device loader,file=$(RELEASE_DIR)/$(OS_BIN),addr=$(BASE_ADDR)
+		   -device loader,file=$(RELEASE_DIR)/$(OS_BIN),addr=$(BASE_ADDR) \
+		   -drive file=$(FS_IMG),if=none,format=raw,id=x0 \
+		   -device virtio-blk-device,drive=x0,bus=virtio-mmio-bus.0
+
 
 QEMUOPTS_DEBUG := $(subst release,debug,$(QEMUOPTS))
 QEMUOPTS_DEBUG += -s -S
