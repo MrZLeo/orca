@@ -1,5 +1,6 @@
 mod fs;
 mod proc;
+mod process;
 
 /// syscall number
 const SYSCALL_READ: usize = 63;

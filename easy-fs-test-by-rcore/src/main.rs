@@ -1,10 +1,12 @@
+use alloc::sync::Arc;
 use clap::{App, Arg};
 use easy_fs::vfs::Inode;
 use easy_fs::{BlockDevice, EasyFileSystem};
+use spin::Mutex;
 use std::fs::{read_dir, File, OpenOptions};
 use std::io::{Read, Seek, SeekFrom, Write};
-use std::sync::Arc;
-use std::sync::Mutex;
+
+extern crate alloc;
 
 const BLOCK_SZ: usize = 512;
 
@@ -12,14 +14,14 @@ struct BlockFile(Mutex<File>);
 
 impl BlockDevice for BlockFile {
     fn read_block(&self, block_id: usize, buf: &mut [u8]) {
-        let mut file = self.0.lock().unwrap();
+        let mut file = self.0.lock();
         file.seek(SeekFrom::Start((block_id * BLOCK_SZ) as u64))
             .expect("Error when seeking!");
         assert_eq!(file.read(buf).unwrap(), BLOCK_SZ, "Not a complete block!");
     }
 
     fn write_block(&self, block_id: usize, buf: &[u8]) {
-        let mut file = self.0.lock().unwrap();
+        let mut file = self.0.lock();
         file.seek(SeekFrom::Start((block_id * BLOCK_SZ) as u64))
             .expect("Error when seeking!");
         assert_eq!(file.write(buf).unwrap(), BLOCK_SZ, "Not a complete block!");
@@ -101,7 +103,7 @@ fn efs_test() -> std::io::Result<()> {
     })));
     EasyFileSystem::new(block_file.clone(), 4096, 1);
     let efs = EasyFileSystem::open(block_file.clone());
-    let root_inode = Arc::new(Inode::new_root(efs));
+    let root_inode = Arc::new(Inode::new_root(Arc::new(Mutex::new(efs))));
     root_inode.create("filea");
     root_inode.create("fileb");
     for name in root_inode.ls() {

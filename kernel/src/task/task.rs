@@ -1,3 +1,4 @@
+use crate::fs::File;
 use core::cell::RefMut;
 
 use alloc::{
@@ -21,7 +22,7 @@ use super::{
     TaskContext,
 };
 
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub enum TaskStatus {
     /// Task that just created
     UnInit,
@@ -49,6 +50,7 @@ pub struct ProcessControlBlockInner {
     pub base_size: usize,
     pub parent: Option<Weak<ProcessControlBlock>>,
     pub children: Vec<Arc<ProcessControlBlock>>,
+    pub fd_table: Vec<Option<Arc<dyn File + Send + Sync>>>,
     pub exit_code: i32,
 }
 
@@ -67,6 +69,12 @@ impl ProcessControlBlockInner {
 
     pub fn is_zombie(&self) -> bool {
         self.status == TaskStatus::Zombie
+    }
+
+    pub fn alloc_fd(&mut self) -> usize {
+        let len = self.fd_table.len();
+        self.fd_table.resize(len + 1, None);
+        len
     }
 }
 
@@ -96,6 +104,7 @@ impl ProcessControlBlock {
                 parent: None,
                 children: Vec::new(),
                 exit_code: 0,
+                fd_table: Vec::new(),
             }),
         };
 
@@ -141,6 +150,7 @@ impl ProcessControlBlock {
                 base_size: parent_inner.base_size,
                 parent: Some(Arc::downgrade(parent)),
                 children: Vec::new(),
+                fd_table: Vec::new(),
                 exit_code: 0,
             }),
         });

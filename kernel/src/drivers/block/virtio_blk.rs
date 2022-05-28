@@ -1,17 +1,18 @@
+use crate::mm::address::PhysAddr;
+use crate::mm::address::PhysPageNum;
+use crate::mm::address::StepByOne;
+use crate::mm::address::VirtAddr;
+use crate::mm::frame_allocator::FrameTracker;
+use crate::mm::frame_allocator::{frame_alloc, frame_dealloc};
+use crate::mm::memory_set::KERNEL_SPACE;
+use crate::mm::page_table::PageTable;
+use crate::mm::page_table::UserBuf;
+
 use alloc::vec::Vec;
 use easy_fs::BlockDevice;
-use riscv::addr::VirtAddr;
-use riscv::addr::VirtAddr;
 use spin::Mutex;
 use virtio_drivers::{VirtIOBlk, VirtIOHeader};
 
-use crate::mm::address::PhysPageNum;
-use crate::mm::frame_allocator::FrameTracker;
-use crate::mm::memory_set::KERNEL_SPACE;
-use crate::mm::memory_set::KERNEL_SPACE;
-use crate::mm::memory_set::KERNEL_SPACE;
-use crate::mm::page_table::PageTable;
-use crate::mm::page_table::PageTable;
 const VIRTIO0: usize = 0x10001000;
 
 pub struct VirtIOBlock(Mutex<VirtIOBlk<'static>>);
@@ -26,11 +27,17 @@ impl VirtIOBlock {
 
 impl BlockDevice for VirtIOBlock {
     fn read_block(&self, block_id: usize, buf: &mut [u8]) {
-        self.0.lock().read_block()
+        self.0
+            .lock()
+            .read_block(block_id, buf)
+            .expect("Error when reading VirtIOBlk");
     }
 
     fn write_block(&self, block_id: usize, buf: &[u8]) {
-        self.0.lock().write_block()
+        self.0
+            .lock()
+            .write_block(block_id, buf)
+            .expect("Error when writing VirtIOBlk")
     }
 }
 

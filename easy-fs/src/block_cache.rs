@@ -1,6 +1,10 @@
 use crate::block_dev::BlockDevice;
 use crate::BLOCK_SIZE;
 use alloc::sync::Arc;
+use core::marker::Sized;
+use core::ops::Drop;
+use core::ops::FnOnce;
+use core::option::Option::Some;
 use lru::LruCache;
 use spin::Mutex;
 

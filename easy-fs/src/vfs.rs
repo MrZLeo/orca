@@ -1,4 +1,11 @@
+use crate::alloc::string::ToString;
+use alloc::string::String;
 use alloc::sync::Arc;
+use alloc::vec::Vec;
+use core::ops::FnOnce;
+use core::option::Option;
+use core::option::Option::None;
+use core::option::Option::Some;
 use spin::Mutex;
 
 use crate::{

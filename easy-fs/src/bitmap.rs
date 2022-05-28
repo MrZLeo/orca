@@ -2,6 +2,9 @@ use crate::block_cache::get_block_cache;
 use crate::block_dev::BlockDevice;
 use crate::BLOCK_SIZE;
 use alloc::sync::Arc;
+use core::option::Option;
+use core::option::Option::None;
+use core::option::Option::Some;
 
 type BitmapBlock = [u64; 64];
 pub const BLOCK_BITS: usize = BLOCK_SIZE * 8;

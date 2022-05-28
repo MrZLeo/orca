@@ -83,7 +83,7 @@ pub fn frame_alloc() -> Option<FrameTracker> {
 }
 
 // do not use outside
-fn frame_dealloc(ppn: PhysPageNum) {
+pub fn frame_dealloc(ppn: PhysPageNum) {
     FRAME_ALLOCATOR.borrow_mut().dealloc(ppn);
 }
 

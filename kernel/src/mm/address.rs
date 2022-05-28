@@ -9,15 +9,19 @@ use crate::config::{PAGE_OFFSET, PAGE_SIZE};
 use core::fmt::Debug;
 
 #[derive(Clone, Copy, PartialEq, PartialOrd, Eq, Ord, Debug)]
+#[repr(C)]
 pub struct PhysAddr(pub usize);
 
 #[derive(Clone, Copy, PartialEq, PartialOrd, Eq, Ord, Debug)]
+#[repr(C)]
 pub struct VirtAddr(pub usize);
 
 #[derive(Clone, Copy, PartialEq, PartialOrd, Eq, Ord, Debug)]
+#[repr(C)]
 pub struct PhysPageNum(pub usize);
 
 #[derive(Clone, Copy, PartialEq, PartialOrd, Eq, Ord, Debug)]
+#[repr(C)]
 pub struct VirtPageNum(pub usize);
 
 const PA_WIDTH_SV39: usize = 56;
@@ -177,6 +181,12 @@ impl StepByOne for VirtPageNum {
     }
 }
 
+impl StepByOne for PhysPageNum {
+    fn step(&mut self) {
+        self.0 += 1
+    }
+}
+
 #[derive(Clone, Copy)]
 pub struct SimpleRange<T>
 where
@@ -252,3 +262,4 @@ where
 }
 
 pub type VPNRange = SimpleRange<VirtPageNum>;
+pub type PPNRange = SimpleRange<PhysPageNum>;
