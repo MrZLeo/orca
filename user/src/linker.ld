@@ -17,14 +17,17 @@ SECTIONS
     . = ALIGN(4K);
     .rodata : {
         *(.rodata .rodata.*)
+        *(.srodata .srodata.*)
     }
     . = ALIGN(4K);
     .data : {
         *(.data .data.*)
+        *(.sdata .sdata.*)
     }
     sbss = .;
     .bss : {
         *(.bss .bss.*)
+        *(.sbss .sbss.*)
     }
     ebss = .;
     /DISCARD/ : {
