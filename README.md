@@ -12,13 +12,30 @@ This OS have some features:
 In order to set enviroment correctly, you should pay attention to your toolchains carefully.
 
 ### QEMU version
-We support the new version of qemu due to the rustsbi-qemu. We do the test in `qemu 6.2.50`, it would be better to use qemu version not older than this. Because many linux or macOS provide old qemu version like `2.x`, I strongly recommand you compile qemu by your self.
+We support the new version of qemu due to the rustsbi-qemu. **I do all test follow new version QEMU now(qemu now have full support for macOS aarch64)**.Because many package manager will introduce you new version of QEMU, I think you don't need to compile QEMU by yourself anymore(but if you want to try, it is nice and not quite difficult).
+
+Use **Homebrew**, you can type command like:
+
+```bash
+$ brew install qemu
+```
+
+to get new version QEMU.
+
+and if you are using fedora, you can use
+
+```bash
+$ sudo dnf install qemu
+```
+
+to get new version of QEMU.
+
 
 [More infomation about qemu.](https://www.qemu.org/download/#source)
 
 ### Rust toolchains
 
-- rustc nightly(I will keep following the newest rustc version, until 2022-2-14, it is vers 1.60)
+- rustc nightly(I will keep following the newest rustc version)
 - risc-v target: we will install them automatically by make commands which will be introduced next
 - other utilities: we will install them automatically by make commands which will introduced next
 
@@ -121,10 +138,14 @@ git checkout v0.4
 
 ![shell-support](https://raw.githubusercontent.com/MrZLeo/Image/main/uPic/2022/03/07/shell-supportkpzugR.gif)
 
-### 2022-3 Way to Persistent Storage
+### 2022-5-29 Way to Persistent Storage
 We will develop a file system that allow us to store of os.
 This file system should be easy to develop and powerful enought right now.
 And it will use extern crate like `lru` and `spin` to achieve efficiency.
+
+```
+git checkout v0.5.1
+```
 
 
 ## References
