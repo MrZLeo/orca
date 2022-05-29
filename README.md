@@ -2,7 +2,7 @@
 
 A RISC-V and unix-like operating system developed just for fun.
 
-This OS have some features:
+This OS has some features:
 - Rust
 - RISC-V ISA
 - Based on rcore
@@ -12,7 +12,7 @@ This OS have some features:
 In order to set enviroment correctly, you should pay attention to your toolchains carefully.
 
 ### QEMU version
-We support the new version of qemu due to the rustsbi-qemu. **I do all test follow new version QEMU now(qemu now have full support for macOS aarch64)**.Because many package manager will introduce you new version of QEMU, I think you don't need to compile QEMU by yourself anymore(but if you want to try, it is nice and not quite difficult).
+We support the new version of qemu due to the rustsbi-qemu. **I do all test follow new version QEMU now(qemu now have full support for macOS aarch64)**. Because many package managers will introduce you new version of QEMU, I think you don't need to compile QEMU by yourself any more(but if you want to try, it is nice and not quite difficult).
 
 Use **Homebrew**, you can type command like:
 
@@ -22,7 +22,7 @@ $ brew install qemu
 
 to get new version QEMU.
 
-and if you are using fedora, you can use
+And if you are using fedora, you can use
 
 ```bash
 $ sudo dnf install qemu
@@ -48,7 +48,7 @@ There are lots of make commands(which will grow together with kernel), and I lis
 - `make build`: compile os
 - `make qemu`: run os
 - `make debug`: build in debug mode
-- `make gdb`: open gdb and connect to os which is started, **os must be build in debug mode**
+- `make gdb`: open gdb and connect to os which is started, **os must be built in debug mode**
 - `make test`: build and run test
 - `make run`: build and qemu
 - `make env`: build the basic environment for rust compiler
@@ -89,9 +89,9 @@ This is a test architecture for orca, which is simple but good enough to support
 
 In test directory, you can design your own test module and bind it to `mod.rs`. It is better to name your module like `xx_test.rs`
 
-In your module, you should desigin a interface like `xx_test`, which contains your whole test procedure. Pay attention that your test function must be use by `test_fn`, which can help us records test result. After that, call it in `main` of `mod.rs`
+In your module, you should desigin an interface like `xx_test`, which contains your whole test procedure. Pay attention that your test function must be use by `test_fn`, which can help us record test result. After that, call it in `main` of `mod.rs`
 
-Test functions is used like `assert!()` macro, but `assert` macro will panic if test don't pass, which can't be use to records test result.
+Test functions are used like `assert!()` macro, but `assert` macro will panic if test don't pass, which can't be used to records test result.
 
 1. Define test module `mm_test.rs` in directory `test`
 2. Define test interface `mm_test`
@@ -107,7 +107,7 @@ pub fn mm_test() {
     test_fn(heap_test2);
 }
 ```
-6. import my module in `mod.rs`, call the interface `mm_test`
+6. Import my module in `mod.rs`, call the interface `mm_test`
 
 ```
 git checkout v0.2.1
