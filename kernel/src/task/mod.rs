@@ -7,7 +7,8 @@ mod switch;
 #[allow(clippy::module_inception)]
 pub mod task;
 
-use crate::loader::app_from_name;
+use crate::fs::inode::open_file;
+use crate::fs::inode::OpenFlags;
 use alloc::sync::Arc;
 
 pub use context::TaskContext;
@@ -22,8 +23,11 @@ use self::processor::take_cur_task;
 use self::scheduler::add_task;
 
 lazy_static! {
-    pub static ref INITPROC: Arc<ProcessControlBlock> =
-        Arc::new(ProcessControlBlock::new(app_from_name("initproc").unwrap()));
+    pub static ref INITPROC: Arc<ProcessControlBlock> = Arc::new({
+        let inode = open_file("initproc", OpenFlags::RDONLY).unwrap();
+        let data = inode.read_all();
+        ProcessControlBlock::new(data.as_slice())
+    });
 }
 
 pub fn add_initproc() {

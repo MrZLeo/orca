@@ -4,7 +4,6 @@ use crate::block_dev::BlockDevice;
 use crate::layout::{DataBlock, DiskInode, DiskInodeType, SuperBlock, EFS_MAGIC};
 use crate::BLOCK_SIZE;
 use alloc::sync::Arc;
-use spin::Mutex;
 
 pub struct EasyFileSystem {
     pub block_dev: Arc<dyn BlockDevice>,
@@ -77,7 +76,7 @@ impl EasyFileSystem {
         efs
     }
 
-    pub fn open(block_dev: Arc<dyn BlockDevice>) -> Arc<Mutex<Self>> {
+    pub fn open(block_dev: Arc<dyn BlockDevice>) -> Self {
         get_block_cache(0, Arc::clone(&block_dev))
             .lock()
             .read(0, |super_block: &SuperBlock| {
@@ -95,7 +94,7 @@ impl EasyFileSystem {
                     data_start_block: 1 + total_inode_block + super_block.data_bitmap_blocks,
                 };
 
-                Arc::new(Mutex::new(efs))
+                efs
             })
     }
 

@@ -1,5 +1,6 @@
 use crate::{block_cache::get_block_cache, block_dev::BlockDevice, BLOCK_SIZE};
 use alloc::sync::Arc;
+use alloc::vec::Vec;
 
 pub const EFS_MAGIC: u32 = 0x3b800001;
 

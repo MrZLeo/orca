@@ -1,49 +1,80 @@
 /// stdin: 0
 /// stdout: 1
 /// stderr: 2
-const FD_STDIN: usize = 0;
-const FD_STDOUT: usize = 1;
-const FD_STDERR: usize = 2;
+pub const FD_STDIN: usize = 0;
+pub const FD_STDOUT: usize = 1;
+pub const FD_STDERR: usize = 2;
 
-use crate::mm::page_table::translated_byte_buffer;
+use core::borrow::BorrowMut;
+
+use crate::fs::inode::{self, OpenFlags};
+use crate::mm::page_table::{translated_byte_buffer, translated_str, UserBuf};
 use crate::sbi::consolo_getchar;
-use crate::task::processor::{self, cur_user_token};
+use crate::task::processor::{self, cur_task, cur_user_token};
 use crate::task::suspend_cur_and_run_next;
 
 pub fn sys_write(fd: usize, buf: *const u8, len: usize) -> isize {
-    match fd {
-        FD_STDOUT => {
-            let buffers = translated_byte_buffer(processor::cur_user_token(), buf, len);
-            for buffer in buffers {
-                print!("{}", core::str::from_utf8(buffer).unwrap());
-            }
-            len as isize
-        }
-        _ => panic!("Unknown fd: {}", fd),
+    let token = cur_user_token();
+    let task = cur_task().unwrap();
+    let inner = task.inner.borrow_mut();
+
+    if fd >= inner.fd_table.len() {
+        return -1;
+    }
+
+    if let Some(file) = &inner.fd_table[fd] {
+        let file = file.clone();
+
+        drop(inner);
+
+        file.write(UserBuf::new(translated_byte_buffer(token, buf, len))) as isize
+    } else {
+        -1
     }
 }
 
 /// @return the len that read from `fd`
 pub fn sys_read(fd: usize, buf: *const u8, len: usize) -> isize {
-    match fd {
-        FD_STDIN => {
-            let mut c;
-            loop {
-                c = consolo_getchar();
-                if c == 0 {
-                    suspend_cur_and_run_next();
-                    continue;
-                } else {
-                    break;
-                }
-            }
-            let ch = c as u8;
-            let mut buffer = translated_byte_buffer(cur_user_token(), buf, len);
-            unsafe {
-                buffer[0].as_mut_ptr().write_volatile(ch);
-            }
-            1
-        }
-        _ => 0,
+    let token = cur_user_token();
+    let task = cur_task().unwrap();
+    let inner = task.inner.borrow_mut();
+
+    if fd >= inner.fd_table.len() {
+        return -1;
     }
+
+    if let Some(file) = &inner.fd_table[fd] {
+        let file = file.clone();
+        drop(inner);
+        file.read(UserBuf::new(translated_byte_buffer(token, buf, len))) as isize
+    } else {
+        -1
+    }
+}
+
+pub fn sys_open(path: *const u8, flags: u32) -> isize {
+    let task = cur_task().unwrap();
+    let token = cur_user_token();
+    let path = translated_str(token, path);
+    if let Some(inode) = inode::open_file(path.as_str(), OpenFlags::from_bits(flags).unwrap()) {
+        let mut inner = task.inner.borrow_mut();
+        let fd = inner.alloc_fd();
+        inner.fd_table[fd] = Some(inode);
+        fd as isize
+    } else {
+        -1
+    }
+}
+
+pub fn sys_close(fd: usize) -> isize {
+    let task = cur_task().unwrap();
+    let mut inner = task.inner.borrow_mut();
+    if fd >= inner.fd_table.len() {
+        return -1;
+    }
+    if inner.fd_table[fd].is_none() {
+        return -1;
+    }
+    inner.fd_table[fd].take();
+    0
 }

@@ -6,27 +6,40 @@
 # 	- make test: build and run test
 # 	- make qeun: build and qemu
 # 	- make env: build the basic environment for rust compiler
+# 	- make img: build file system image
 
 TARGET := riscv64gc-unknown-none-elf
 OS_NAME := orca
 OS_BIN := $(OS_NAME).bin
 RELEASE_DIR := target/$(TARGET)/release
 DEBUG_DIR := $(subst release,debug,$(RELEASE_DIR))
+USER_DIR := ../user
+USER_TARGET := $(USER_DIR)/target/riscv64gc-unknown-none-elf/release/
+APPS := $(USER_DIR)/src/bin/*
 
 BOOTLOADER_DIR := ../bootloader
 BOOTLOADER_BIN := rustsbi-qemu.bin
 
 BASE_ADDR := 0x80200000
 
+FS_IMG := ../user/$(RELEASE_DIR)/fs.img
+
 QEMU = qemu-system-riscv64
 QEMUOPTS = -machine virt \
 		   -nographic \
 		   -m 128M \
 		   -bios $(BOOTLOADER_DIR)/$(BOOTLOADER_BIN) \
-		   -device loader,file=$(RELEASE_DIR)/$(OS_BIN),addr=$(BASE_ADDR)
+		   -device loader,file=$(RELEASE_DIR)/$(OS_BIN),addr=$(BASE_ADDR) \
 
-QEMUOPTS_DEBUG := $(subst release,debug,$(QEMUOPTS))
+QEMUOPTS_TEMP := $(QEMUOPTS)
+QEMUOPTS_DEBUG := $(subst release,debug,$(QEMUOPTS_TEMP))
 QEMUOPTS_DEBUG += -s -S
+
+QEMUOPTS += -drive file=$(FS_IMG),if=none,format=raw,id=x0 \
+		    -device virtio-blk-device,drive=x0,bus=virtio-mmio-bus.0
+
+QEMUOPTS_DEBUG += -drive file=$(FS_IMG),if=none,format=raw,id=x0 \
+		    -device virtio-blk-device,drive=x0,bus=virtio-mmio-bus.0
 
 GDB = riscv64-unknown-elf-gdb
 GDBOPTS = -ex 'file $(DEBUG_DIR)/$(OS_NAME)'
@@ -39,7 +52,7 @@ user:
 
 qemu:
 	@echo "### Booting system..."
-	@$(QEMU) $(QEMUOPTS)
+	$(QEMU) $(QEMUOPTS)
 
 release_build:
 	@echo "### Building orca..."
@@ -51,7 +64,7 @@ release_objcopy:
 
 build: release_build release_objcopy
 
-run: user build qemu
+run: img build qemu
 
 debug_build:
 	@echo "### Building orca..."
@@ -64,7 +77,7 @@ debug_objcopy:
 debug_qemu:
 	$(QEMU) $(QEMUOPTS_DEBUG)
 
-debug: user debug_build debug_objcopy debug_qemu
+debug: img debug_build debug_objcopy debug_qemu
 
 test_build:
 	@echo "### Building orca..."
@@ -102,3 +115,12 @@ clean:
 
 all: build
 
+img: $(APPS)
+	@cd ../user && make build
+	@rm -rf $(FS_IMG)
+	@cd ../easy-fs-test-by-rcore && cargo run --release -- -s $(USER_DIR)/src/bin/ -t ../user/target/riscv64gc-unknown-none-elf/release/
+
+$(APPS):
+
+
+.PHONY: build qemu debug env gdb run all img test

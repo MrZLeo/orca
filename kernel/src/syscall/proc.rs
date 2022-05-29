@@ -2,8 +2,9 @@ use alloc::format;
 use alloc::sync::Arc;
 
 use crate::console::{println_with_color, YELLOW};
-use crate::loader::app_from_name;
+use crate::fs::inode::{open_file, OpenFlags};
 use crate::mm::page_table;
+use crate::mm::page_table::translated_str;
 use crate::task::exit_cur_and_run_next;
 use crate::task::processor::{cur_task, cur_user_token};
 use crate::task::{self, processor, scheduler, task::ProcessControlBlock};
@@ -40,18 +41,6 @@ pub fn sys_fork() -> isize {
     pid as isize
 }
 
-pub fn sys_exec(path: *const u8) -> isize {
-    let token = cur_user_token();
-    let command = page_table::translated_str(token, path);
-    if let Some(data) = app_from_name(command.as_str()) {
-        let task = cur_task().unwrap();
-        task.exec(data);
-        0
-    } else {
-        -1
-    }
-}
-
 pub fn sys_waitpid(pid: isize, exit_code_ptr: *mut i32) -> isize {
     let task = cur_task().unwrap();
 
@@ -85,4 +74,19 @@ pub fn sys_getpid() -> isize {
 pub fn sys_spawn(path: *const u8) -> isize {
     // TODO
     0
+}
+
+pub fn sys_exec(path: *const u8) -> isize {
+    let token = cur_user_token();
+    let path = translated_str(token, path);
+    // read elf file as read only becase we don't want
+    // our executable file get modify
+    if let Some(app_inode) = open_file(path.as_str(), OpenFlags::RDONLY) {
+        let all_data = app_inode.read_all();
+        let task = cur_task().unwrap();
+        task.exec(all_data.as_slice());
+        0
+    } else {
+        -1
+    }
 }

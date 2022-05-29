@@ -12,6 +12,20 @@ trait FrameAllocator {
     fn dealloc(&mut self, ppn: PhysPageNum);
 }
 
+/// # physical frame allocator
+/// alloc physical frame from ram
+///
+/// ## alloc
+/// @return `Option<PhysPageNum>`
+///
+/// We use a simple stack to alloc frame.
+/// - if user return frame, push it into a vector
+/// - if there is no frame that return, from user, `cur++`
+/// - if there is some frames released, use it from vector
+///
+/// ## dealloc
+/// release PhysPageNum
+///
 pub struct StackFrameAllocator {
     cur: usize,
     end: usize,
@@ -83,10 +97,11 @@ pub fn frame_alloc() -> Option<FrameTracker> {
 }
 
 // do not use outside
-fn frame_dealloc(ppn: PhysPageNum) {
+pub fn frame_dealloc(ppn: PhysPageNum) {
     FRAME_ALLOCATOR.borrow_mut().dealloc(ppn);
 }
 
+/// wraper of PhysPageNum
 #[derive(Debug)]
 pub struct FrameTracker {
     pub ppn: PhysPageNum,

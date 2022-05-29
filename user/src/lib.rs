@@ -6,6 +6,9 @@
 extern crate alloc;
 
 #[macro_use]
+extern crate bitflags;
+
+#[macro_use]
 pub mod console;
 mod heap_allocator;
 mod lang_item;
@@ -73,6 +76,14 @@ pub fn exec(path: &str) -> isize {
     sys_exec(path)
 }
 
+pub fn open(path: &str, flags: OpenFlags) -> isize {
+    sys_open(path, flags.bits())
+}
+
+pub fn close(fd: usize) -> isize {
+    sys_close(fd)
+}
+
 pub fn wait(exit_code: &mut i32) -> isize {
     loop {
         match sys_waitpid(-1, exit_code as *mut _) {
@@ -100,4 +111,14 @@ pub fn sleep(time_ms: usize) {
 
 pub fn readline() -> String {
     console::getline()
+}
+
+bitflags! {
+    pub struct OpenFlags: u32 {
+        const RDONLY = 0;
+        const WRONLY = 1 << 0;
+        const RDWR = 1 << 1;
+        const CREATE = 1 << 9;
+        const TRUNC = 1 << 10;
+    }
 }

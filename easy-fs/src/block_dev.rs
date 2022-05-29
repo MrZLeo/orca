@@ -1,4 +1,6 @@
 use core::any::Any;
+use core::marker::Send;
+use core::marker::Sync;
 
 pub trait BlockDevice: Send + Sync + Any {
     fn read_block(&self, block_id: usize, buf: &mut [u8]);
