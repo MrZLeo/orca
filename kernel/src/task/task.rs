@@ -1,4 +1,6 @@
+use crate::fs::stdio;
 use crate::fs::File;
+use alloc::vec;
 use core::cell::RefMut;
 
 use alloc::{
@@ -72,9 +74,12 @@ impl ProcessControlBlockInner {
     }
 
     pub fn alloc_fd(&mut self) -> usize {
-        let len = self.fd_table.len();
-        self.fd_table.resize(len + 1, None);
-        len
+        if let Some(fd) = (0..self.fd_table.len()).find(|fd| self.fd_table[*fd].is_none()) {
+            fd
+        } else {
+            self.fd_table.push(None);
+            self.fd_table.len() - 1
+        }
     }
 }
 
@@ -104,7 +109,14 @@ impl ProcessControlBlock {
                 parent: None,
                 children: Vec::new(),
                 exit_code: 0,
-                fd_table: Vec::new(),
+                fd_table: vec![
+                    // 0 -> stdin
+                    Some(Arc::new(stdio::Stdin)),
+                    // 1 -> stdout
+                    Some(Arc::new(stdio::Stdout)),
+                    // 2 -> stderr
+                    Some(Arc::new(stdio::Stdout)),
+                ],
             }),
         };
 
@@ -139,6 +151,16 @@ impl ProcessControlBlock {
         let kernel_stack = KernelStack::new(pid.0);
         let kernel_stack_top = kernel_stack.top();
 
+        // copy fd table
+        let mut new_fd_table = Vec::new();
+        for fd in parent_inner.fd_table.iter() {
+            if let Some(file) = fd {
+                new_fd_table.push(Some(file.clone()));
+            } else {
+                new_fd_table.push(None);
+            }
+        }
+
         let tcb = Arc::new(ProcessControlBlock {
             pid,
             kernel_stack,
@@ -150,11 +172,12 @@ impl ProcessControlBlock {
                 base_size: parent_inner.base_size,
                 parent: Some(Arc::downgrade(parent)),
                 children: Vec::new(),
-                fd_table: Vec::new(),
+                fd_table: new_fd_table,
                 exit_code: 0,
             }),
         });
 
+        // add children
         parent_inner.children.push(tcb.clone());
 
         // TODO: what this code about?

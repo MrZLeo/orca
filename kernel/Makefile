@@ -38,6 +38,9 @@ QEMUOPTS_DEBUG += -s -S
 QEMUOPTS += -drive file=$(FS_IMG),if=none,format=raw,id=x0 \
 		    -device virtio-blk-device,drive=x0,bus=virtio-mmio-bus.0
 
+QEMUOPTS_DEBUG += -drive file=$(FS_IMG),if=none,format=raw,id=x0 \
+		    -device virtio-blk-device,drive=x0,bus=virtio-mmio-bus.0
+
 GDB = riscv64-unknown-elf-gdb
 GDBOPTS = -ex 'file $(DEBUG_DIR)/$(OS_NAME)'
 GDBOPTS += -ex 'set arch riscv:rv64'
@@ -49,7 +52,7 @@ user:
 
 qemu:
 	@echo "### Booting system..."
-	@$(QEMU) $(QEMUOPTS)
+	$(QEMU) $(QEMUOPTS)
 
 release_build:
 	@echo "### Building orca..."

@@ -10,7 +10,6 @@ mod config;
 mod drivers;
 mod fs;
 mod lang_item;
-mod loader;
 mod mm;
 mod orca_logo;
 mod sbi;
@@ -38,13 +37,14 @@ use crate::config::sdata;
 use crate::config::skernel;
 use crate::config::srodata;
 use crate::config::stext;
+use crate::fs::inode::list_apps;
+use crate::fs::inode::ROOT_INODE;
 
 use core::arch::global_asm;
 
 extern crate alloc;
 
 global_asm!(include_str!("entry.S"));
-global_asm!(include_str!("link_app.S"));
 
 #[no_mangle]
 pub fn __main() {
@@ -71,7 +71,7 @@ pub fn __main() {
     }
 
     /* start schedule process */
-    loader::list_app();
+    list_apps();
     task::run();
 
     panic!("unreachable: __main ended");

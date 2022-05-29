@@ -89,6 +89,7 @@ fn set_user_trap_entry() {
 
 #[no_mangle]
 pub fn trap_return() -> ! {
+    // debug!("trap return");
     set_user_trap_entry();
     let trap_cxt_ptr = TRAP_CONTEXT;
     let user_satp = cur_user_token();

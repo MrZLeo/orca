@@ -34,4 +34,4 @@ extern "C" {
 
 // MMIO for qemu
 // (start addr, length)
-pub const MMIO: &[(usize, usize)] = &[(0x1001000, 0x1000)];
+pub const MMIO: &[(usize, usize)] = &[(0x10001000, 0x1000)];

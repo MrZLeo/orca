@@ -1,9 +1,9 @@
 /// stdin: 0
 /// stdout: 1
 /// stderr: 2
-const FD_STDIN: usize = 0;
-const FD_STDOUT: usize = 1;
-const FD_STDERR: usize = 2;
+pub const FD_STDIN: usize = 0;
+pub const FD_STDOUT: usize = 1;
+pub const FD_STDERR: usize = 2;
 
 use core::borrow::BorrowMut;
 

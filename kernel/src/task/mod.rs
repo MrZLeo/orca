@@ -9,7 +9,6 @@ pub mod task;
 
 use crate::fs::inode::open_file;
 use crate::fs::inode::OpenFlags;
-use crate::loader::app_from_name;
 use alloc::sync::Arc;
 
 pub use context::TaskContext;
