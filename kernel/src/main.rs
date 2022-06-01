@@ -44,6 +44,9 @@ use core::arch::global_asm;
 
 extern crate alloc;
 
+// entry of orca OS
+// bootloader will shift $pc to entry.S
+// and entry.S will call __main here
 global_asm!(include_str!("entry.S"));
 
 #[no_mangle]

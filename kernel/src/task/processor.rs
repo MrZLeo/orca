@@ -6,6 +6,11 @@ use crate::sync::UniProcSafeCell;
 use crate::trap::TrapContext;
 use alloc::sync::Arc;
 
+/// # Processor
+/// Processor is the abstraction of one HART(a special concept in RISC-V)
+/// For spercific, it means a running processor
+///
+/// We will shift a running process into this strcture and manage it.
 pub struct Processor {
     cur: Option<Arc<ProcessControlBlock>>,
     idle_task_cxt: TaskContext,
@@ -19,14 +24,17 @@ impl Processor {
         }
     }
 
+    /// use `take()` of Option to get ownership
     pub fn take_cur(&mut self) -> Option<Arc<ProcessControlBlock>> {
         self.cur.take()
     }
 
+    /// current running process of this processor
     pub fn cur(&self) -> Option<Arc<ProcessControlBlock>> {
         self.cur.as_ref().map(Arc::clone)
     }
 
+    /// get idel process's TaskContext
     pub fn idle_task_cxt_ptr(&mut self) -> *mut TaskContext {
         &mut self.idle_task_cxt as *mut TaskContext
     }
@@ -54,6 +62,9 @@ pub fn cur_trap_cxt() -> &'static mut TrapContext {
     cur_task().unwrap().borrow_mut().trap_cxt()
 }
 
+/// # processor::run
+/// start running processor
+/// > warn: endless loop
 pub fn run() {
     loop {
         let mut processor = PROCESSOR.borrow_mut();
@@ -66,6 +77,7 @@ pub fn run() {
             processor.cur = Some(task);
             drop(processor);
 
+            // use switch.S, change idle -> next
             unsafe {
                 __switch(idle_ptr, next_ptr);
             }
@@ -73,6 +85,9 @@ pub fn run() {
     }
 }
 
+/// # processor::schedule
+/// change different task to run
+/// > warn: in detail, we will shift to *idle_task* first, and *idel_task* will switch to other available task
 pub fn schedule(cur_task: *mut TaskContext) {
     let mut processor = PROCESSOR.borrow_mut();
     let idle_ptr = processor.idle_task_cxt_ptr();

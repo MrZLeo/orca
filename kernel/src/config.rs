@@ -1,3 +1,7 @@
+// gerneral size
+pub const M: usize = 1024;
+pub const G: usize = 1024 * 1024;
+
 // stack
 pub const USER_STACK_SIZE: usize = 4096 * 2;
 pub const KERNEL_STACK_SIZE: usize = 4096 * 2;
@@ -12,11 +16,12 @@ pub const CLOCK_FREQ: usize = 12_500_000;
 pub const PAGE_SIZE: usize = 4096;
 pub const PAGE_OFFSET: usize = 12;
 
-// memory
+// physical memory
 pub const MEMORY_END: usize = 0x8800_0000; // 128M Memory
 pub const TRAMPOLINE: usize = usize::MAX - PAGE_SIZE + 1;
 pub const TRAP_CONTEXT: usize = TRAMPOLINE - PAGE_SIZE;
 
+/// address of each section of kernel
 extern "C" {
     pub fn skernel();
     pub fn ekernel();

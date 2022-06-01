@@ -19,6 +19,11 @@ pub fn init() {
     set_kernel_trap_entry();
 }
 
+/// # trap_handler
+///
+/// Address different trap, use match rather than trap vector
+///
+/// TODO: use trap vector
 #[no_mangle]
 pub fn trap_handler() -> ! {
     set_kernel_trap_entry();
