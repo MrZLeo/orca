@@ -38,11 +38,15 @@ use crate::{
     sync::UniProcSafeCell,
 };
 
+use crate::task;
 use alloc::format;
 use lazy_static::lazy_static;
-
 mod mm_test;
 
+/// # entry of test module
+///
+/// test module will run kernel test in kernel at first
+/// and change to user space to run user test
 pub fn main() -> ! {
     mm_test::mm_test();
     test!("--- TEST END ---\n");
@@ -52,7 +56,8 @@ pub fn main() -> ! {
         GREEN,
     );
     println_with_color(format!("fail: {}", TEST_MANAGER.get_fail()).as_str(), RED);
-    shutdown();
+    task::run();
+    unreachable!("test crash unexpected");
 }
 
 struct TestManager {

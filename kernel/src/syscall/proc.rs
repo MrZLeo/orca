@@ -11,10 +11,6 @@ use crate::task::{self, processor, scheduler, task::ProcessControlBlock};
 use crate::timer::time_ms;
 
 pub fn sys_exit(exit_code: i32) -> ! {
-    println_with_color(
-        format!("[kernel]Process exited with code {}", exit_code).as_str(),
-        YELLOW,
-    );
     exit_cur_and_run_next(exit_code);
     panic!("Unreachable: app exited");
 }

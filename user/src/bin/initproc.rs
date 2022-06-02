@@ -6,10 +6,24 @@ use user_lib::{exec, fork, user_yield, wait};
 #[macro_use]
 extern crate user_lib;
 
+/// # Initproc
+///
+/// It works like a simple `launchd`, which provides management and clearup of
+/// all process. In details, it will `fork` a child process to boot shell, which
+/// is **osh** here. After that, initproc wait process to exit and do some cleanup.
+///
+/// - Actually this process **will not return forever**, but our `main` function here
+/// must be compatible.
 #[no_mangle]
 fn main() -> i32 {
     if fork() == 0 {
-        exec("shell\0");
+        /* if we are in test, just call `user_test_entry`, we don't need to
+         * boot the shell*/
+        if cfg!(feature = "user_test") {
+            exec("user_test_entry\0");
+        } else {
+            exec("shell\0");
+        }
     } else {
         loop {
             let mut exit_code = 0i32;

@@ -67,7 +67,8 @@ pub fn __main() {
     sys_info();
     kernel!("Hello World!");
 
-    /* enter test module */
+    /* enter kernel test module
+     * ONLY enter when testing kernel */
     #[cfg(feature = "kernel_test")]
     {
         test::main();
@@ -81,11 +82,11 @@ pub fn __main() {
 }
 
 fn clear_bss() {
-    // (sbss as usize..ebss as usize).for_each(|x| unsafe { (x as *mut u8).write_volatile(0) });
-    unsafe {
-        core::slice::from_raw_parts_mut(sbss as usize as *mut u8, ebss as usize - sbss as usize)
-            .fill(0)
-    }
+    (sbss as usize..ebss as usize).for_each(|x| unsafe { (x as *mut u8).write_volatile(0) });
+    // unsafe {
+    //     core::slice::from_raw_parts_mut(sbss as usize as *mut u8, ebss as usize - sbss as usize)
+    //         .fill(0)
+    // }
 }
 
 fn sys_info() {

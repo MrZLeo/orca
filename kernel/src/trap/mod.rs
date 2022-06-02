@@ -13,6 +13,7 @@ use riscv::register::{
     sie, stval, stvec,
 };
 
+/// include assembly code `trap.S` which do real work when trap happens
 global_asm!(include_str!("trap.S"));
 
 pub fn init() {
