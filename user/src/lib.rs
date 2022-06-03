@@ -43,6 +43,10 @@ use alloc::string::String;
 /// syscall for user
 use syscall::*;
 
+pub fn shutdown() -> isize {
+    sys_shutdown()
+}
+
 pub fn read(fd: usize, buffer: &mut [u8]) -> isize {
     sys_read(fd, buffer)
 }

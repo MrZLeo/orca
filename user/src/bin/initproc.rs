@@ -1,7 +1,7 @@
 #![no_std]
 #![no_main]
 
-use user_lib::{exec, fork, user_yield, wait};
+use user_lib::{exec, exit, fork, shutdown, user_yield, wait};
 
 #[macro_use]
 extern crate user_lib;
@@ -36,6 +36,10 @@ fn main() -> i32 {
                 "[initproc] Released a zombie process pid = {}, exit code = {}",
                 pid, exit_code
             );
+            /* if we are in test just exit after all test finished */
+            if cfg!(feature = "user_test") {
+                shutdown();
+            }
         }
     }
 

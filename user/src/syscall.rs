@@ -15,6 +15,7 @@ fn syscall(id: usize, args: [usize; 3]) -> isize {
 }
 
 /// syscall numbers
+const SYSCALL_SHUTDOWN: usize = 48;
 const SYSCALL_OPEN: usize = 56;
 const SYSCALL_CLOSE: usize = 57;
 const SYSCALL_READ: usize = 63;
@@ -28,6 +29,10 @@ const SYSCALL_EXEC: usize = 221;
 const SYSCALL_WAITPID: usize = 260;
 
 /// syscall implementation
+
+pub fn sys_shutdown() -> isize {
+    syscall(SYSCALL_SHUTDOWN, [0, 0, 0])
+}
 
 pub fn sys_open(path: &str, flags: u32) -> isize {
     syscall(SYSCALL_OPEN, [path.as_ptr() as usize, flags as usize, 0])

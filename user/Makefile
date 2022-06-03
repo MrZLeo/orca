@@ -14,4 +14,8 @@ build: $(APPS)
 clean:
 	cargo clean
 
+test: $(APPS)
+	@echo "test build"
+	@cargo build --features "user_test" --release
+
 .PHONY: build clean

@@ -2,6 +2,7 @@ pub mod fs;
 mod proc;
 
 /// syscall number
+const SYSCALL_SHUTDOWN: usize = 48;
 const SYSCALL_OPEN: usize = 56;
 const SYSCALL_CLOSE: usize = 57;
 const SYSCALL_READ: usize = 63;
@@ -21,6 +22,7 @@ pub use proc::*;
 /// general syscall implementation
 pub fn syscall(id: usize, args: [usize; 3]) -> isize {
     match id {
+        SYSCALL_SHUTDOWN => sys_shutdown(),
         SYSCALL_OPEN => sys_open(args[0] as *const u8, args[1] as u32),
         SYSCALL_CLOSE => sys_close(args[0]),
         SYSCALL_READ => sys_read(args[0], args[1] as *const u8, args[2]),

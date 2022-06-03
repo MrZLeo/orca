@@ -5,10 +5,15 @@ use crate::console::{println_with_color, YELLOW};
 use crate::fs::inode::{open_file, OpenFlags};
 use crate::mm::page_table;
 use crate::mm::page_table::translated_str;
+use crate::sbi::shutdown;
 use crate::task::exit_cur_and_run_next;
 use crate::task::processor::{cur_task, cur_user_token};
 use crate::task::{self, processor, scheduler, task::ProcessControlBlock};
 use crate::timer::time_ms;
+
+pub fn sys_shutdown() -> ! {
+    shutdown();
+}
 
 pub fn sys_exit(exit_code: i32) -> ! {
     exit_cur_and_run_next(exit_code);

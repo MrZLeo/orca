@@ -27,6 +27,7 @@ static BUILTIN_BIN: &[&str] = &[
     "huge_write\0",
     "cat_filea\0",
     "filetest_simple\0",
+    "shutdown\0",
 ];
 
 // use crate::console::BS;

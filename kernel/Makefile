@@ -84,7 +84,7 @@ test_build:
 	@cargo build --features "kernel_test" --release
 
 
-test: user test_build release_objcopy qemu
+test: img_test test_build release_objcopy qemu
 
 gdb:
 	$(GDB) $(GDBOPTS)
@@ -122,5 +122,10 @@ img: $(APPS)
 
 $(APPS):
 
+img_test: $(APPS)
+	@cd ../user && make test
+	@rm -rf $(FS_IMG)
+	@cd ../easy-fs-test-by-rcore && cargo run --release -- -s $(USER_DIR)/src/bin/ -t ../user/target/riscv64gc-unknown-none-elf/release/
 
-.PHONY: build qemu debug env gdb run all img test
+
+.PHONY: build qemu debug env gdb run all img test img_test
