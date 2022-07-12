@@ -76,6 +76,7 @@ pub extern "C" fn virtio_dma_dealloc(pa: PhysAddr, pages: usize) -> i32 {
 pub extern "C" fn virtio_phys_to_virt(paddr: PhysAddr) -> VirtAddr {
     VirtAddr(paddr.0)
 }
+
 #[no_mangle]
 pub extern "C" fn virtio_virt_to_phys(vaddr: VirtAddr) -> PhysAddr {
     PageTable::from_token(KERNEL_SPACE.borrow_mut().token())
