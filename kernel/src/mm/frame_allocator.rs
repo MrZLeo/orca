@@ -109,7 +109,6 @@ pub struct FrameTracker {
 
 impl FrameTracker {
     fn new(ppn: PhysPageNum) -> Self {
-        // ppn.bytes_array().iter().map(|x| 0);
         let bytes_arr = ppn.bytes_array();
         for i in bytes_arr {
             *i = 0;

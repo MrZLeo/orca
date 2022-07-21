@@ -24,9 +24,7 @@ pub fn sys_write(fd: usize, buf: *const u8, len: usize) -> isize {
 
     if let Some(file) = &inner.fd_table[fd] {
         let file = file.clone();
-
         drop(inner);
-
         file.write(UserBuf::new(translated_byte_buffer(token, buf, len))) as isize
     } else {
         -1

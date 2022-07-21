@@ -55,10 +55,13 @@ pub fn __main() {
 
     /* init */
     mm::init();
+
     debug!("create initproc");
     task::add_initproc();
+
     debug!("trap init");
     trap::init();
+
     debug!("start timer");
     trap::enable_timer_interrupt();
     timer::set_strigger();
