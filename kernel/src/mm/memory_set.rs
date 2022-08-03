@@ -114,7 +114,7 @@ impl Clone for MapArea {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum MapType {
     Identical,
     Framed,
@@ -230,8 +230,8 @@ impl MemorySet {
         for pair in MMIO {
             memory_set.push(
                 MapArea::new(
-                    (*pair).0.into(),
-                    ((*pair).0 + (*pair).1).into(),
+                    pair.0.into(),
+                    (pair.0 + pair.1).into(),
                     MapType::Identical,
                     MapPermission::R | MapPermission::W,
                 ),

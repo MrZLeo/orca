@@ -47,7 +47,7 @@ impl File for OSInode {
         let mut inner = self.inner.lock();
         let mut total_size = 0;
         for slice in buf.buffers.iter_mut() {
-            let read_size = inner.inode.read_at(inner.offset, *slice);
+            let read_size = inner.inode.read_at(inner.offset, slice);
             if read_size == 0 {
                 break;
             }
@@ -62,7 +62,7 @@ impl File for OSInode {
         let mut inner = self.inner.lock();
         let mut total_size = 0;
         for slice in buf.buffers.iter() {
-            let write_size = inner.inode.write_at(inner.offset, *slice);
+            let write_size = inner.inode.write_at(inner.offset, slice);
 
             // success write size equals to slice size
             assert_eq!(write_size, slice.len());

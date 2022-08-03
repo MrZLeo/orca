@@ -50,7 +50,7 @@ impl File for Stdout {
 
     fn write(&self, buf: crate::mm::page_table::UserBuf) -> usize {
         for buffer in buf.buffers.iter() {
-            print!("{}", core::str::from_utf8(*buffer).unwrap());
+            print!("{}", core::str::from_utf8(buffer).unwrap());
         }
         buf.len()
     }
