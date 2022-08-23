@@ -44,15 +44,16 @@ pub enum Command {
 /// - Produce a `Command` by analyzing a code block
 /// - A code block can be a line of code or more complicated structure like
 /// *`For` loop* or *`if` condition*
-/// TODO: now it is a temporary implementation, just read command
+/// TODO: now it is a temporary implementation, just read command and return
 pub fn get_command() -> Option<Command> {
     let str = getline();
-    if BUILTIN_BIN.iter().any(|&bin| *bin == str) {
-        Some(Command::Bin(str))
-    } else {
-        print!("{str}: ");
-        None
-    }
+    // if BUILTIN_BIN.iter().any(|&bin| *bin == str) {
+    //     Some(Command::Bin(str))
+    // } else {
+    //     print!("{str}: ");
+    //     None
+    // }
+    Some(Command::Bin(str))
 }
 
 enum Token {

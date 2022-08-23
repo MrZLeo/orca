@@ -1,7 +1,7 @@
 #![no_std]
 #![no_main]
 
-use user_lib::{exec, exit, fork, shutdown, user_yield, wait};
+use user_lib::{exec, fork, shutdown, user_yield, wait};
 
 #[macro_use]
 extern crate user_lib;

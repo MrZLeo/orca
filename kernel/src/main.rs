@@ -75,6 +75,7 @@ pub fn __main() {
     #[cfg(feature = "kernel_test")]
     {
         test::main();
+        panic!("test do not return");
     }
 
     /* start schedule process */
